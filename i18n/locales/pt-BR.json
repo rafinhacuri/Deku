@@ -1,0 +1,58 @@
+{
+  "header": {
+    "title": "Deku",
+    "subtitle": "Seu painel de finanças pessoais",
+    "month_placeholder": "Selecione o mês"
+  },
+  "months": {
+    "january": "Janeiro",
+    "february": "Fevereiro",
+    "march": "Março",
+    "april": "Abril",
+    "may": "Maio",
+    "june": "Junho",
+    "july": "Julho",
+    "august": "Agosto",
+    "september": "Setembro",
+    "october": "Outubro",
+    "november": "Novembro",
+    "december": "Dezembro"
+  },
+  "salary": "Salário",
+  "salary_types": {
+    "freelance": "Freelance",
+    "benefits": "Benefícios",
+    "investments": "Investimentos",
+    "others": "Outros"
+  },
+  "salary_section": {
+    "title": "Adicionar nova receita",
+    "value": "Valor",
+    "type": "Tipo",
+    "day": "Dia",
+    "add_salary": "Adicionar receita",
+    "history": "Histórico de receitas",
+    "empty_title": "Nenhuma receita adicionada ainda",
+    "empty_subtitle": "Adicione sua receita para vê-la listada aqui."
+  },
+  "expenses": "Despesas",
+  "expenses_types": {
+    "food": "Alimentação",
+    "shopping": "Compras",
+    "transportation": "Transporte",
+    "healthcare": "Saúde",
+    "housing": "Moradia",
+    "utilities": "Serviços",
+    "education": "Educação",
+    "entertainment": "Entretenimento",
+    "bills": "Contas",
+    "miscellaneous": "Diversos",
+    "investments": "Investimentos",
+    "others": "Outros"
+  },
+  "leftover": "Saldo restante",
+  "everything_earned": "Tudo que entrou no mês",
+  "everything_spent": "Tudo que saiu no mês",
+  "positive_balance": "Você está no positivo.",
+  "negative_balance": "Saldo negativo este mês."
+}

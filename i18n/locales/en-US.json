@@ -1,0 +1,58 @@
+{
+  "header": {
+    "title": "Deku",
+    "subtitle": "Your personal finance dashboard",
+    "month_placeholder": "Select month"
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+  "salary": "Salary",
+  "salary_types": {
+    "freelance": "Freelance",
+    "benefits": "Benefits",
+    "investments": "Investments",
+    "others": "Others"
+  },
+  "salary_section": {
+    "title": "Add new income",
+    "value": "Value",
+    "type": "Type",
+    "day": "Day",
+    "add_salary": "Add income",
+    "history": "Income history",
+    "empty_title": "No income added yet",
+    "empty_subtitle": "Add your income to see it listed here."
+  },
+  "expenses": "Expenses",
+  "expenses_types": {
+    "food": "Food",
+    "shopping": "Shopping",
+    "transportation": "Transportation",
+    "healthcare": "Healthcare",
+    "housing": "Housing",
+    "utilities": "Utilities",
+    "education": "Education",
+    "entertainment": "Entertainment",
+    "bills": "Bills",
+    "miscellaneous": "Miscellaneous",
+    "investments": "Investments",
+    "others": "Others"
+  },
+  "leftover": "Leftover",
+  "everything_earned": "Everything earned this month",
+  "everything_spent": "Everything spent this month",
+  "positive_balance": "You are in positive balance.",
+  "negative_balance": "Negative balance this month."
+}

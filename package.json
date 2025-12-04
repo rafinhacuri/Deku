@@ -39,7 +39,9 @@
     "release": "bun prerelease && bumpp && bun docker:build && bun docker:push"
   },
   "dependencies": {
+    "@iconify-json/circle-flags": "^1.2.10",
     "@iconify-json/lucide": "^1.2.78",
+    "@nuxt/image": "2.0.0",
     "@nuxt/ui": "4.2.1",
     "@nuxtjs/i18n": "^10.2.1",
     "@nuxtjs/seo": "^3.2.2",

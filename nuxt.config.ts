@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxtjs/seo', '@vueuse/nuxt', 'nuxt-security', '@nuxtjs/i18n'],
+  modules: ['@nuxt/ui', '@nuxtjs/seo', '@vueuse/nuxt', 'nuxt-security', '@nuxtjs/i18n', '@nuxt/image'],
   $development: {
     security: { headers: { crossOriginEmbedderPolicy: 'unsafe-none' } },
   },
@@ -18,7 +18,6 @@ export default defineNuxtConfig({
       { code: 'en', language: 'en-US', name: 'English (US)', file: 'en-US.json', flag: 'flag:us-4x3' },
       { code: 'pt', language: 'pt-BR', name: 'Português (BR)', file: 'pt-BR.json', flag: 'flag:br-4x3' },
     ],
-    skipSettingLocaleOnNavigate: true,
   },
   linkChecker: { enabled: false },
   security: {
