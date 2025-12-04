@@ -54,19 +54,19 @@ async function login(){
   const body = AuthSchema.safeParse(state.value)
 
   if(!body.success){
-    for(const e of body.error.issues) toast.add({ title: t(e.message), icon: 'i-lucide-shield-alert', color: 'error' })
+    for(const e of body.error.issues) toast.add({ title: e.message, icon: 'i-lucide-shield-alert', color: 'error' })
     return finish({ error: true })
   }
 
-  const res = await $fetch<{ message: string, token: string }>('/server/login', { method: 'post', body: body.data })
-    .catch(error => { toast.add({ title: t(error.data.message), icon: 'i-lucide-shield-alert', color: 'error' }) })
+  const res = await $fetch<AuthResponse>('/server/login', { method: 'post', body: body.data })
+    .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
 
   if(!res) return finish({ error: true })
 
   finish({ force: true })
   setUserSession({ username: state.value.email, token: res.token })
-  toast.add({ title: t(res.message), icon: 'i-lucide-badge-check', color: 'success' })
-  await navigateTo('/start')
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+  await navigateTo('/')
 }
 
 async function register(){
@@ -79,7 +79,7 @@ async function register(){
     return finish({ error: true })
   }
 
-  const res = await $fetch<{ message: string }>('/server/api/user', { method: 'PUT', body: { ...body.data, level: 'user' } })
+  const res = await $fetch<goRes>('/server/api/user', { method: 'PUT', body: body.data })
     .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
 
   if(!res) return finish({ error: true })

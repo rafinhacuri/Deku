@@ -4,7 +4,7 @@ definePageMeta({
 })
 
 const { t, setLocale, setLocaleCookie, locale } = useI18n()
-const user = ref('rafinhacurig@gmail.com')
+const { user, clearUserSession } = useUserSession()
 
 useHead({ title: t('header.title') })
 useSeoMeta({ description: t('header.subtitle') })
@@ -23,6 +23,11 @@ function changeLanguage(){
 
 const isEn = computed(() => locale.value === 'en')
 
+async function logout(){
+  clearUserSession()
+  await navigateTo('/login')
+}
+
 const months = ref([
   t('months.january'),
   t('months.february'),
@@ -40,7 +45,7 @@ const months = ref([
 
 const currentMonthIndex = new Date().getMonth()
 const monthsToShow = months.value.slice(0, currentMonthIndex + 1).toReversed()
-const selectedMonth = ref()
+const selectedMonth = ref(monthsToShow[0])
 
 const expensesTypes = ref([
   t('expenses_types.food'),
@@ -77,7 +82,7 @@ function addSalaryEntry(value: number, type: string, day: number | undefined){
   now.setMonth(monthIndex)
   now.setDate(1)
   now.setHours(0, 0, 0, 0)
-  salary.value.push({ value, type, day, month: now, user: user.value })
+  salary.value.push({ value, type, day, month: now, user: user.value.username })
 
   newValueSalary.value = 0
   newTypeSalary.value = ''
@@ -101,6 +106,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
         <div class="flex items-center space-x-3">
           <USelectMenu v-model="selectedMonth" :items="monthsToShow" size="sm" :placeholder="t('header.month_placeholder')" />
           <UButton variant="outline" size="sm" :icon="isEn ? 'i-circle-flags-us' : 'i-circle-flags-br'" :color="isEn ? 'info' : 'primary'" @click="changeLanguage" />
+          <UButton variant="outline" color="neutral" size="sm" icon="i-lucide-log-out" @click="logout()" />
         </div>
       </template>
     </UHeader>

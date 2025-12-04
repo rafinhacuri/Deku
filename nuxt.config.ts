@@ -11,6 +11,9 @@ export default defineNuxtConfig({
     description: '💰 Web application to control your income',
     indexable: true,
   },
+  routeRules: {
+    '/server/**': { proxy: { to: 'http://localhost:8080/**' } },
+  },
   compatibilityDate: '2025-12-02',
   i18n: {
     defaultLocale: 'en',

@@ -33,6 +33,7 @@
     "lint:fix": "eslint . --fix",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
+    "gentypes": "bun run --cwd api/cmd go run typescript.go && eslint shared/types/goServer.d.ts --fix",
     "prerelease": "bun lint && bun typecheck",
     "docker:build": "docker build --platform=linux/amd64 -t mizle/deku:latest -t mizle/deku:$(node -p \"require('./package.json').version\") .",
     "docker:push": "docker push mizle/deku:latest && docker push mizle/deku:$(node -p \"require('./package.json').version\")",
