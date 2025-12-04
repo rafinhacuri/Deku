@@ -2,7 +2,8 @@
   "header": {
     "title": "Deku",
     "subtitle": "Seu painel de finanças pessoais",
-    "month_placeholder": "Selecione o mês"
+    "month_placeholder": "Selecione o mês",
+    "tagline": "Deku · Finanças Pessoais"
   },
   "login": {
     "week1": "No mínimo 8 caracteres",

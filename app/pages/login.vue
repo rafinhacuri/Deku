@@ -91,43 +91,76 @@ async function register(){
 </script>
 
 <template>
-  <UContainer class="flex h-screen items-center justify-center">
-    <div class="flex w-full max-w-md flex-col items-center gap-6 p-6">
-      <div class="flex flex-col items-center ">
-        <NuxtImg src="/logo.png" alt="SanchezDNS Logo" width="92" />
-        <p class="mt-2 text-2xl font-bold">
-          {{ t('header.title') }}
-        </p>
+  <section class="relative flex h-screen items-center justify-center overflow-hidden bg-slate-950">
+    <div class="pointer-events-none absolute inset-0 opacity-70">
+      <div class="absolute -top-32 -left-16 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
+      <div class="absolute -right-16 -bottom-32 h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(15,23,42,0.9),transparent_60%)]" />
+    </div>
+
+    <div class="relative z-10 flex w-full max-w-md flex-col items-center gap-8 px-4 py-10">
+      <div class="flex flex-col items-center gap-3 text-center">
+        <div class="relative flex items-center justify-center">
+          <div class="absolute -inset-3 rounded-2xl bg-slate-900/80 blur-xl" />
+          <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-400/40 bg-slate-900/80 shadow-xl shadow-emerald-500/20">
+            <NuxtImg src="/logo.png" alt="SanchezDNS Logo" width="42" height="42" class="rounded-xl" />
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-xs font-medium tracking-[0.18em] text-emerald-400/80 uppercase">
+            {{ t('header.tagline') }}
+          </p>
+        </div>
       </div>
-      <UCard class="w-full">
+
+      <UCard class="relative w-full overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/85 shadow-2xl shadow-emerald-500/15 backdrop-blur-xl">
+        <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-500/15 via-slate-900/40 to-cyan-500/10" />
+
         <template #header>
-          <h2 class="text-lg font-medium">
-            {{ t('login.title') }}
-          </h2>
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="text-base font-semibold text-slate-50">
+                {{ t('login.title') }}
+              </h2>
+              <p class="mt-1 text-[0.72rem] text-slate-400">
+                {{ t('login.enter') }}
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2 text-[0.65rem] text-slate-400">
+              <span class="inline-flex h-6 items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 text-[0.65rem] font-medium text-emerald-200">
+                <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
+                {{ t('login.strong') }}
+              </span>
+            </div>
+          </div>
         </template>
 
-        <UForm :schema="AuthSchema" :state="state" class="space-y-4" @submit="login">
-          <UFormField label="Email" name="email">
-            <UInput v-model="state.email" icon="i-lucide-mail" class="w-full" />
-          </UFormField>
+        <div class="relative z-10">
+          <UForm :schema="AuthSchema" :state="state" class="space-y-4" @submit="login">
+            <UFormField label="Email" name="email">
+              <UInput v-model="state.email" icon="i-lucide-mail" class="w-full" />
+            </UFormField>
 
-          <UFormField label="Password" name="password">
-            <UInput v-model="state.password" class="w-full" icon="i-lucide-lock" :type="show ? 'text' : 'password'">
-              <template #trailing>
-                <UButton color="neutral" variant="link" size="sm" :icon="show ? 'i-lucide-eye-off' : 'i-lucide-eye'" :aria-label="show ? 'Hide password' : 'Show password'" :aria-pressed="show" aria-controls="password" @click="show = !show" />
-              </template>
-            </UInput>
-          </UFormField>
-          <div class="flex justify-end">
-            <UButton variant="ghost" size="sm" @click="modal = true">
-              {{ t('login.register') }}
+            <UFormField label="Password" name="password">
+              <UInput v-model="state.password" class="w-full" icon="i-lucide-lock" :type="show ? 'text' : 'password'">
+                <template #trailing>
+                  <UButton color="neutral" variant="link" size="sm" :icon="show ? 'i-lucide-eye-off' : 'i-lucide-eye'" :aria-label="show ? 'Hide password' : 'Show password'" :aria-pressed="show" aria-controls="password" @click="show = !show" />
+                </template>
+              </UInput>
+            </UFormField>
+            <div class="flex justify-end">
+              <UButton variant="ghost" size="sm" @click="modal = true">
+                {{ t('login.register') }}
+              </UButton>
+            </div>
+
+            <UButton type="submit" class="mt-5 flex w-full justify-center">
+              {{ t('login.title') }}
             </UButton>
-          </div>
-
-          <UButton type="submit" class="mt-5 flex w-full justify-center">
-            {{ t('login.title') }}
-          </UButton>
-        </UForm>
+          </UForm>
+        </div>
       </UCard>
 
       <UModal v-model:open="modal" :title="t('login.create_account')" :description="t('login.create_description')" :ui="{ footer: 'justify-end' }">
@@ -170,5 +203,5 @@ async function register(){
         </template>
       </UModal>
     </div>
-  </UContainer>
+  </section>
 </template>

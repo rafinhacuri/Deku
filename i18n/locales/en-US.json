@@ -2,7 +2,8 @@
   "header": {
     "title": "Deku",
     "subtitle": "Your personal finance dashboard",
-    "month_placeholder": "Select month"
+    "month_placeholder": "Select month",
+    "tagline": "Deku · Personal Finance"
   },
   "login": {
     "week1": "At least 8 characters",
