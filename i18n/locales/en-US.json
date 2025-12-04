@@ -4,6 +4,23 @@
     "subtitle": "Your personal finance dashboard",
     "month_placeholder": "Select month"
   },
+  "login": {
+    "week1": "At least 8 characters",
+    "week2": "At least 1 number",
+    "week3": "At least 1 lowercase letter",
+    "week4": "At least 1 uppercase letter",
+    "weak": "Weak password",
+    "enter": "Enter a password",
+    "medium": "Medium password",
+    "strong": "Strong password",
+    "title": "Login",
+    "register": "Register...",
+    "create_account": "Create an account",
+    "create_description": "Create your account to start managing your personal finances.",
+    "must_contain": "Password must contain:",
+    "requeriment_meeted": "requirement met",
+    "requeriment_not_meeted": "requirement not met"
+  },
   "months": {
     "january": "January",
     "february": "February",

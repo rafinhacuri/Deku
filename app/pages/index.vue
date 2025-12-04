@@ -94,7 +94,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
   <section>
     <UHeader>
       <template #title>
-        <NuxtImg src="/logo2.png" alt="Deku Logo" height="32" />
+        <NuxtImg src="/logo.png" alt="Deku Logo" height="32" />
         {{ t('header.title') }}
       </template>
       <template #right>

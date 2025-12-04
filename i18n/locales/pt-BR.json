@@ -4,6 +4,23 @@
     "subtitle": "Seu painel de finanças pessoais",
     "month_placeholder": "Selecione o mês"
   },
+  "login": {
+    "week1": "No mínimo 8 caracteres",
+    "week2": "No mínimo 1 número",
+    "week3": "No mínimo 1 letra minúscula",
+    "week4": "No mínimo 1 letra maiúscula",
+    "weak": "Senha fraca",
+    "enter": "Digite uma senha",
+    "medium": "Senha média",
+    "strong": "Senha forte",
+    "title": "Login",
+    "register": "Registrar...",
+    "create_account": "Criar uma conta",
+    "create_description": "Crie sua conta para começar a gerenciar suas finanças pessoais.",
+    "must_contain": "A senha deve conter:",
+    "requeriment_meeted": "requisito atendido",
+    "requeriment_not_meeted": "requisito não atendido"
+  },
   "months": {
     "january": "Janeiro",
     "february": "Fevereiro",
