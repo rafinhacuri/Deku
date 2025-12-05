@@ -311,7 +311,7 @@ const incomeSourcesSummary = computed(() => {
               </p>
 
               <UBadge class="mt-2 border border-slate-500/60 bg-slate-800/70 text-white">
-                {{ t('expenses') }}: {{ expenses.length > 0 ? 1 : 0 }}
+                {{ t('expenses') }}: {{ expenses.length }}
               </UBadge>
             </div>
 
