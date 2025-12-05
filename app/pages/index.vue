@@ -110,8 +110,17 @@ async function deleteSalary(id: number){
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
 }
 
-const isEditing = ref(false)
+const salary = useTemplateRef<HTMLElement>('salary')
 
+const { y } = useWindowScroll({ behavior: 'smooth' })
+
+function scrollToDestiny(){
+  if(salary.value){
+    y.value = salary.value.scrollHeight
+  }
+}
+
+const isEditing = ref(false)
 const stateEditSalaryId = ref<number>(0)
 
 function initEdit(line: SalaryResponse){
@@ -120,6 +129,7 @@ function initEdit(line: SalaryResponse){
   stateSalary.value.day = line.day
   stateEditSalaryId.value = line.id
   isEditing.value = true
+  scrollToDestiny()
 }
 
 function cancelEdit(){
@@ -345,11 +355,12 @@ const incomeSourcesSummary = computed(() => {
         </UCard>
       </div>
 
+      <div />
       <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-500/10 via-emerald-400/5 to-transparent" />
 
-          <div class="relative z-10 space-y-5">
+          <div ref="salary" class="relative z-10 space-y-5">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h2 class="text-lg font-semibold tracking-wide text-white">
@@ -393,87 +404,76 @@ const incomeSourcesSummary = computed(() => {
               </div>
             </div>
 
-            <UButton v-if="isEditing" :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="info" icon="i-lucide-edit" variant="solid" :label="t('salary_section.edit_salary')" @click="updateSalary" />
+            <div v-if="isEditing" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="info" icon="i-lucide-edit" variant="solid" :label="t('salary_section.edit_salary')" @click="updateSalary" />
+              <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-x" variant="solid" :label="t('cancel')" @click="cancelEdit" />
+            </div>
             <UButton v-else :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="primary" icon="i-lucide-plus" variant="solid" :label="t('salary_section.add_salary')" @click="addSalaryEntry" />
           </div>
         </UCard>
 
         <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
-          <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-400/12 via-cyan-300/4 to-transparent" />
+          <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/12 via-rose-400/5 to-transparent" />
 
-          <div class="relative z-10 space-y-4">
+          <div class="relative z-10 space-y-5">
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h2 class="text-lg font-semibold tracking-wide text-white">
-                  {{ t('salary_section.sources_overview') }}
+                  {{ t('expenses_section.title') }}
                 </h2>
                 <p class="mt-1 text-xs text-slate-400">
-                  {{ t('salary_section.sources_overview_subtitle') }}
+                  {{ t('expenses_section.subtitle') }}
                 </p>
               </div>
 
-              <UBadge class="mt-1 border border-emerald-400/40 bg-emerald-500/10 text-emerald-200">
-                {{ t('salary_section.per_source') }}
-              </UBadge>
-            </div>
-
-            <div class="max-h-72 space-y-2 overflow-y-auto pr-2">
-              <div v-if="!incomeSourcesSummary.length" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-8 text-center">
-                <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
-                  <UIcon name="i-lucide-piggy-bank" class="h-5 w-5 text-slate-300" />
-                </div>
-                <p class="text-sm font-medium text-slate-200">
-                  {{ t('salary_section.sources_empty_title') }}
-                </p>
+              <div class="flex flex-col items-end gap-1">
+                <UBadge class="border border-rose-400/40 bg-rose-500/10 text-rose-300">
+                  {{ t('expenses') }}
+                </UBadge>
                 <p class="text-xs text-slate-400">
-                  {{ t('salary_section.sources_empty_subtitle') }}
+                  {{ selectedMonth }}
                 </p>
               </div>
+            </div>
 
-              <div v-else>
-                <div v-for="source in incomeSourcesSummary" :key="source.id" class="space-y-2 rounded-xl bg-slate-900/70 px-3 py-2 ring-1 ring-slate-700/50">
-                  <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-2">
-                      <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-400/10 ring-1 ring-emerald-400/40">
-                        <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-emerald-300" />
-                      </span>
-                      <div class="flex flex-col">
-                        <span class="text-sm font-medium text-slate-100">
-                          {{ source.label }}
-                        </span>
-                        <span class="text-[0.7rem] text-slate-400">
-                          {{ t('salary_section.source_income_label') }}
-                          {{ source.income.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
-                        </span>
-                      </div>
-                    </div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div class="space-y-1">
+                <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
+                  {{ t('expenses_section.value') }}
+                </p>
+                <UInputNumber v-model="stateExpense.vl" :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" />
+              </div>
 
-                    <div class="text-right">
-                      <p class="text-sm font-semibold" :class="source.leftover >= 0 ? 'text-emerald-300' : 'text-rose-400'">
-                        {{ source.leftover.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
-                      </p>
-                      <p class="text-[0.65rem] text-slate-400">
-                        {{ t('salary_section.source_leftover_label') }}
-                      </p>
-                    </div>
-                  </div>
+              <div class="space-y-1">
+                <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
+                  {{ t('expenses_section.type') }}
+                </p>
+                <USelectMenu v-model="stateExpense.type" label-key="label" value-key="id" :items="expensesTypes" size="md" class="w-full" />
+              </div>
 
-                  <div class="space-y-1 text-[0.7rem] text-slate-300">
-                    <div class="flex items-center justify-between">
-                      <span>{{ t('salary_section.source_spent_label') }}</span>
-                      <span class="text-rose-300">
-                        {{ source.spent.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
-                      </span>
-                    </div>
+              <div class="space-y-1">
+                <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
+                  {{ t('expenses_section.day') }}
+                </p>
+                <UInputNumber v-model="stateExpense.day" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
+              </div>
 
-                    <div class="h-2 w-full overflow-hidden rounded-full bg-slate-800">
-                      <!-- eslint-disable-next-line vue/no-restricted-v-bind -->
-                      <div class="h-2 rounded-full bg-emerald-400" :style="{ width: source.income ? Math.max(4, Math.min(100, Math.round((source.leftover / source.income) * 100))) + '%' : '0%'}" />
-                    </div>
-                  </div>
-                </div>
+              <div class="space-y-1">
+                <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
+                  {{ t('expenses_section.payment_method') }}
+                </p>
+                <USelectMenu v-model="stateExpense.paymentMethod" label-key="label" value-key="id" :items="paymentsMethods" size="md" class="w-full" />
               </div>
             </div>
+
+            <div class="space-y-1">
+              <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
+                {{ t('expenses_section.description') }}
+              </p>
+              <UTextarea v-model="stateExpense.description" :rows="3" resize="none" class="w-full" />
+            </div>
+
+            <UButton :loading="isLoading" class="mt-1 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-minus-circle" variant="solid" :label="t('expenses_section.add_expense')" @click="addExpense" />
           </div>
         </UCard>
       </div>
@@ -481,67 +481,81 @@ const incomeSourcesSummary = computed(() => {
       <div class="mt-10 space-y-6">
         <div class="grid grid-cols-1 gap-6 xl:grid-cols-5">
           <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl xl:col-span-2">
-            <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/12 via-rose-400/5 to-transparent" />
+            <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-400/12 via-cyan-300/4 to-transparent" />
 
-            <div class="relative z-10 space-y-5">
+            <div class="relative z-10 space-y-4">
               <div class="flex items-start justify-between gap-3">
                 <div>
                   <h2 class="text-lg font-semibold tracking-wide text-white">
-                    {{ t('expenses_section.title') }}
+                    {{ t('salary_section.sources_overview') }}
                   </h2>
                   <p class="mt-1 text-xs text-slate-400">
-                    {{ t('expenses_section.subtitle') }}
+                    {{ t('salary_section.sources_overview_subtitle') }}
                   </p>
                 </div>
 
-                <div class="flex flex-col items-end gap-1">
-                  <UBadge class="border border-rose-400/40 bg-rose-500/10 text-rose-300">
-                    {{ t('expenses') }}
-                  </UBadge>
+                <UBadge class="mt-1 border border-emerald-400/40 bg-emerald-500/10 text-emerald-200">
+                  {{ t('salary_section.per_source') }}
+                </UBadge>
+              </div>
+
+              <div class="space-y-2">
+                <div v-if="!incomeSourcesSummary.length" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-8 text-center">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
+                    <UIcon name="i-lucide-piggy-bank" class="h-5 w-5 text-slate-300" />
+                  </div>
+                  <p class="text-sm font-medium text-slate-200">
+                    {{ t('salary_section.sources_empty_title') }}
+                  </p>
                   <p class="text-xs text-slate-400">
-                    {{ selectedMonth }}
+                    {{ t('salary_section.sources_empty_subtitle') }}
                   </p>
+                </div>
+
+                <div v-else>
+                  <div v-for="source in incomeSourcesSummary" :key="source.id" class="space-y-2 rounded-xl bg-slate-900/70 px-3 py-2 ring-1 ring-slate-700/50">
+                    <div class="flex items-center justify-between text-xs">
+                      <div class="flex items-center gap-2">
+                        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-400/10 ring-1 ring-emerald-400/40">
+                          <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-emerald-300" />
+                        </span>
+                        <div class="flex flex-col">
+                          <span class="text-sm font-medium text-slate-100">
+                            {{ source.label }}
+                          </span>
+                          <span class="text-[0.7rem] text-slate-400">
+                            {{ t('salary_section.source_income_label') }}
+                            {{ source.income.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="text-right">
+                        <p class="text-sm font-semibold" :class="source.leftover >= 0 ? 'text-emerald-300' : 'text-rose-400'">
+                          {{ source.leftover.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                        </p>
+                        <p class="text-[0.65rem] text-slate-400">
+                          {{ t('salary_section.source_leftover_label') }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="space-y-1 text-[0.7rem] text-slate-300">
+                      <div class="flex items-center justify-between">
+                        <span>{{ t('salary_section.source_spent_label') }}</span>
+                        <span class="text-rose-300">
+                          {{ source.spent.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                        </span>
+                      </div>
+
+                      <div class="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                        <!-- eslint-disable-next-line vue/no-restricted-v-bind -->
+                        <div class="h-2 rounded-full bg-emerald-400" :style="{ width: source.income ? Math.max(4, Math.min(100, Math.round((source.leftover / source.income) * 100))) + '%' : '0%'}" />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div class="space-y-1">
-                  <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                    {{ t('expenses_section.value') }}
-                  </p>
-                  <UInputNumber v-model="stateExpense.vl" :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" />
-                </div>
-
-                <div class="space-y-1">
-                  <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                    {{ t('expenses_section.type') }}
-                  </p>
-                  <USelectMenu v-model="stateExpense.type" label-key="label" value-key="id" :items="expensesTypes" size="md" class="w-full" />
-                </div>
-
-                <div class="space-y-1">
-                  <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                    {{ t('expenses_section.day') }}
-                  </p>
-                  <UInputNumber v-model="stateExpense.day" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
-                </div>
-
-                <div class="space-y-1">
-                  <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                    {{ t('expenses_section.payment_method') }}
-                  </p>
-                  <USelectMenu v-model="stateExpense.paymentMethod" label-key="label" value-key="id" :items="paymentsMethods" size="md" class="w-full" />
-                </div>
-              </div>
-
-              <div class="space-y-1">
-                <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                  {{ t('expenses_section.description') }}
-                </p>
-                <UTextarea v-model="stateExpense.description" :rows="3" resize="none" class="w-full" />
-              </div>
-
-              <UButton :loading="isLoading" class="mt-1 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-minus-circle" variant="solid" :label="t('expenses_section.add_expense')" @click="addExpense" />
             </div>
           </UCard>
 
