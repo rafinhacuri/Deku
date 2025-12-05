@@ -97,7 +97,6 @@
     "tip_focus": "Categories with larger bars are where you spend the most.",
     "empty_chart_title": "No expenses to analyze",
     "empty_chart_subtitle": "Add some expenses to see the category chart.",
-    "by_payment_method": "By payment method",
     "no_payment_method": "No payment method",
     "history": "Expenses history",
     "history_subtitle": "Track every outgoing transaction registered this month.",
