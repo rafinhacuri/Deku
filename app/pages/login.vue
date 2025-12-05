@@ -99,7 +99,7 @@ async function register(){
     </div>
 
     <div class="relative z-10 flex w-full max-w-md flex-col items-center gap-8 px-4 py-10">
-      <div class="flex flex-col items-center gap-3 text-center">
+      <div class="flex flex-col items-center gap-7 text-center">
         <div class="relative flex items-center justify-center">
           <div class="absolute -inset-3 rounded-2xl bg-slate-900/80 blur-xl" />
           <div class="relative flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-400/40 bg-slate-900/80 shadow-xl shadow-emerald-500/20">
