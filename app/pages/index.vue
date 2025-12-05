@@ -778,7 +778,7 @@ const incomeSourcesSummary = computed(() => {
             </div>
 
             <div class="max-h-80 space-y-3 overflow-y-auto pr-2">
-              <div v-if="expenses && expenses.length === 0" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
+              <div v-if="!expenses || !expenses.length" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
                   <UIcon name="i-lucide-credit-card" class="h-5 w-5 text-slate-300" />
                 </div>
