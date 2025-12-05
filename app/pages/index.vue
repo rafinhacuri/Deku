@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Salary } from '~~/shared/types/goServer'
 import { SalarySchema } from '~/utils/salary.schema'
 
 definePageMeta({
@@ -75,20 +74,24 @@ const salaryTypes = ref([
   t('salary_types.others'),
 ])
 
-const salary = ref<Salary[]>([])
-const salaryTotal = computed(() => salary.value.reduce((acc, curr) => acc + curr.vl, 0))
-
-const stateSalary = ref<Salary>({ vl: 0, type: '', day: undefined, month: '' })
-
-async function addSalaryEntry(){
-  start()
+const mes = computed(() => {
   const now = new Date()
   const monthIndex = selectedMonth.value ? months.value.indexOf(selectedMonth.value) : currentMonthIndex
   now.setMonth(monthIndex)
   now.setDate(1)
   now.setHours(0, 0, 0, 0)
+  return now.toISOString()
+})
 
-  stateSalary.value.month = now.toISOString()
+const { data, refresh } = await useFetch<SalaryResponse[]>('/server/api/salary', { method: 'GET', query: { month: mes } })
+const salaryTotal = computed(() => data.value ? data.value.reduce((acc, curr) => acc + curr.vl, 0) : 0)
+
+const stateSalary = ref<Salary>({ vl: 0, type: '', day: undefined, month: '' })
+
+async function addSalaryEntry(){
+  start()
+
+  stateSalary.value.month = mes.value
 
   const body = SalarySchema.safeParse(stateSalary.value)
 
@@ -102,7 +105,7 @@ async function addSalaryEntry(){
 
   if(!res) return finish({ error: true })
 
-  // refresh()
+  refresh()
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
   stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
@@ -146,7 +149,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
                 {{ t('everything_earned') }}
               </p>
               <UBadge class="mt-2 border border-slate-500/60 bg-slate-800/70 text-white">
-                {{ t('salary') }}: {{ salary.length }}
+                {{ t('salary') }}: {{ data ? data.length : 0 }}
               </UBadge>
             </div>
           </div>
@@ -284,12 +287,12 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
               </div>
 
               <UBadge class="mt-1 border border-cyan-400/40 bg-cyan-500/10 text-cyan-200">
-                {{ t('salary') }}: {{ salary.length }}
+                {{ t('salary') }}: {{ data ? data.length : 0 }}
               </UBadge>
             </div>
 
             <div class="max-h-72 space-y-3 overflow-y-auto pr-2">
-              <div v-if="salary.length === 0" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
+              <div v-if="data && data.length === 0" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
                   <UIcon name="i-lucide-wallet" class="h-5 w-5 text-slate-300" />
                 </div>
@@ -302,7 +305,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
               </div>
 
               <div v-else>
-                <div v-for="(item, index) in salary" :key="index" class="flex items-center justify-between gap-3 rounded-xl border border-slate-600/40 bg-slate-900/70 px-3 py-3 transition hover:border-cyan-400/60 hover:bg-slate-900">
+                <div v-for="(item, index) in data" :key="index" class="flex items-center justify-between gap-3 rounded-xl border border-slate-600/40 bg-slate-900/70 px-3 py-3 transition hover:border-cyan-400/60 hover:bg-slate-900">
                   <div class="flex items-center gap-3">
                     <div class="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-400/10 ring-1 ring-cyan-400/40">
                       <UIcon name="i-lucide-coins" class="h-4 w-4 text-cyan-300" />

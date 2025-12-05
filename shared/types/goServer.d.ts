@@ -13,3 +13,10 @@ export interface Salary{
   day?: number,
   month: string,
 }
+export interface SalaryResponse{
+  id: number,
+  vl: number,
+  type: string,
+  day?: number,
+  month: string,
+}

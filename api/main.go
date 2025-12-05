@@ -23,6 +23,7 @@ func init() {
 }
 
 func main() {
+	defer sqlite.SQL.Close()
 
 	gin.DefaultWriter = io.Discard
 

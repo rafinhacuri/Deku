@@ -22,4 +22,5 @@ func RegisterRoutes(server *gin.Engine) {
 	api.GET("/check-session", middleware.CheckSession)
 
 	api.PUT("/salary", controllers.InsertSalary)
+	api.GET("/salary", controllers.GetSalaries)
 }
