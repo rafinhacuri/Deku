@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@nuxtjs/seo', '@vueuse/nuxt', 'nuxt-security', '@nuxtjs/i18n', '@nuxt/image'],
+  modules: ['@nuxt/ui', '@nuxtjs/seo', '@vueuse/nuxt', 'nuxt-security', '@nuxtjs/i18n', '@nuxt/image', 'nuxt-aos'],
   $development: {
     security: { headers: { crossOriginEmbedderPolicy: 'unsafe-none' } },
   },

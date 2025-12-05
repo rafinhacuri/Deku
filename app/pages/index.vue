@@ -272,7 +272,7 @@ const incomeSourcesSummary = computed(() => {
 
     <UContainer v-if="selectedMonth" class="my-8">
       <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 backdrop-blur-xl">
+        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-400/20 to-transparent" />
           <div class="relative z-10 flex justify-between">
             <div>
@@ -292,7 +292,7 @@ const incomeSourcesSummary = computed(() => {
           </div>
         </UCard>
 
-        <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 backdrop-blur-xl">
+        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-400/20 to-transparent" />
 
           <div class="relative z-10 flex justify-between">
@@ -325,7 +325,7 @@ const incomeSourcesSummary = computed(() => {
           </div>
         </UCard>
 
-        <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 backdrop-blur-xl">
+        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-cyan-400/20 to-transparent" />
 
           <div class="relative z-10 flex justify-between">
@@ -355,9 +355,8 @@ const incomeSourcesSummary = computed(() => {
         </UCard>
       </div>
 
-      <div />
       <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
+        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-500/10 via-emerald-400/5 to-transparent" />
 
           <div ref="salary" class="relative z-10 space-y-5">
@@ -412,7 +411,7 @@ const incomeSourcesSummary = computed(() => {
           </div>
         </UCard>
 
-        <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
+        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/12 via-rose-400/5 to-transparent" />
 
           <div class="relative z-10 space-y-5">
@@ -480,7 +479,7 @@ const incomeSourcesSummary = computed(() => {
 
       <div class="mt-10 space-y-6">
         <div class="grid grid-cols-1 gap-6 xl:grid-cols-5">
-          <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl xl:col-span-2">
+          <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl xl:col-span-2">
             <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-400/12 via-cyan-300/4 to-transparent" />
 
             <div class="relative z-10 space-y-4">
@@ -559,7 +558,7 @@ const incomeSourcesSummary = computed(() => {
             </div>
           </UCard>
 
-          <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl xl:col-span-3">
+          <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl xl:col-span-3">
             <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-400/18 via-rose-300/4 to-transparent" />
 
             <div class="relative z-10 space-y-5">
@@ -668,7 +667,7 @@ const incomeSourcesSummary = computed(() => {
           </UCard>
         </div>
 
-        <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
+        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-cyan-400/15 via-cyan-300/5 to-transparent" />
 
           <div class="relative z-10 space-y-4">
@@ -753,7 +752,7 @@ const incomeSourcesSummary = computed(() => {
           </div>
         </UCard>
 
-        <UCard class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
+        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-400/15 via-rose-300/5 to-transparent" />
 
           <div class="relative z-10 space-y-4">
