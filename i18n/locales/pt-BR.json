@@ -1,4 +1,6 @@
 {
+  "confirm": "Confirmar",
+  "cancel": "Cancelar",
   "header": {
     "title": "Deku",
     "subtitle": "Seu painel de finanças pessoais",
@@ -51,7 +53,8 @@
     "add_salary": "Adicionar receita",
     "history": "Histórico de receitas",
     "empty_title": "Nenhuma receita adicionada ainda",
-    "empty_subtitle": "Adicione sua receita para vê-la listada aqui."
+    "empty_subtitle": "Adicione sua receita para vê-la listada aqui.",
+    "delete_confirmation": "Tem certeza de que deseja excluir esta receita? Esta ação não pode ser desfeita."
   },
   "expenses": "Despesas",
   "expenses_types": {

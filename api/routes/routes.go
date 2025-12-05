@@ -23,4 +23,5 @@ func RegisterRoutes(server *gin.Engine) {
 
 	api.PUT("/salary", controllers.InsertSalary)
 	api.GET("/salary", controllers.GetSalaries)
+	api.DELETE("/salary", controllers.DeleteSalary)
 }

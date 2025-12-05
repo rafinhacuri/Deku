@@ -54,7 +54,7 @@ func GetSalaries(c *gin.Context) {
 	userID := c.GetString("username")
 	month := c.Query("month")
 
-	rows, err := sqlite.SQL.Query("SELECT value, type, day, month FROM salary WHERE user = ? AND month = ?", userID, month)
+	rows, err := sqlite.SQL.Query("SELECT id, value, type, day, month FROM salary WHERE user = ? AND month = ?", userID, month)
 	if err != nil {
 		c.JSON(500, gin.H{"message": err.Error()})
 		return
@@ -64,7 +64,7 @@ func GetSalaries(c *gin.Context) {
 	salaries := []SalaryResponse{}
 	for rows.Next() {
 		var salary SalaryResponse
-		if err := rows.Scan(&salary.Vl, &salary.Type, &salary.Day, &salary.Month); err != nil {
+		if err := rows.Scan(&salary.ID, &salary.Vl, &salary.Type, &salary.Day, &salary.Month); err != nil {
 			c.JSON(500, gin.H{"message": err.Error()})
 			return
 		}
@@ -84,4 +84,27 @@ func GetSalaries(c *gin.Context) {
 	})
 
 	c.JSON(200, salaries)
+}
+
+func DeleteSalary(c *gin.Context) {
+	id := c.Query("id")
+
+	res, err := sqlite.SQL.Exec("DELETE FROM salary WHERE id = ?", id)
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	if rowsAffected == 0 {
+		c.JSON(404, gin.H{"message": "Income not found"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Income deleted successfully"})
 }

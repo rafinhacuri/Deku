@@ -111,6 +111,19 @@ async function addSalaryEntry(){
   stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
 }
 
+async function deleteSalary(id: number){
+  start()
+
+  const res = await $fetch<goRes>('/server/api/salary', { method: 'DELETE', query: { id } })
+    .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
+
+  if(!res) return finish({ error: true })
+
+  refresh()
+  finish({ force: true })
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+}
+
 const expenses = ref<{ value: number, type: string | undefined, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: Date }[]>([])
 const expensesTotal = computed(() => expenses.value.reduce((acc, curr) => acc + curr.value, 0))
 
@@ -335,7 +348,20 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 
                   <div class="flex items-center gap-2">
                     <UButton :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" />
-                    <UButton :loading="isLoading" color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
+                    <UPopover arrow>
+                      <UButton :loading="isLoading" color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
+
+                      <template #content="{close}">
+                        <div class="max-w-xs space-y-3 p-3">
+                          <p class="text-sm text-slate-200">
+                            {{ t('salary_section.delete_confirmation') }}
+                          </p>
+                          <div class="flex items-center justify-end gap-2">
+                            <UButton :loading="isLoading" variant="solid" color="error" size="sm" :label="t('confirm')" @click="deleteSalary(item.id), close()" />
+                          </div>
+                        </div>
+                      </template>
+                    </UPopover>
                   </div>
                 </div>
               </div>
