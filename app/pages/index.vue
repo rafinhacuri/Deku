@@ -69,8 +69,8 @@ const mes = computed(() => {
   return now.toISOString()
 })
 
-const { data, refresh } = await useFetch<SalaryResponse[]>('/server/api/salary', { method: 'GET', query: { month: mes }, default: () => [] as SalaryResponse[] })
-const { data: expenses, refresh: refreshExpenses } = await useFetch<ExpenseResponse[]>('/server/api/expense', { method: 'GET', query: { month: mes }, default: () => [] as ExpenseResponse[] })
+const { data, refresh } = await useFetch<SalaryResponse[]>('/server/api/salary', { method: 'GET', query: { month: mes } })
+const { data: expenses, refresh: refreshExpenses } = await useFetch<ExpenseResponse[]>('/server/api/expense', { method: 'GET', query: { month: mes } })
 
 const salaryTotal = computed(() => data.value ? data.value.reduce((acc, curr) => acc + curr.vl, 0) : 0)
 
@@ -206,8 +206,8 @@ const paymentsMethods = computed(() => {
   })
 })
 
-const expensesTypesWithData = computed(() => expensesTypes.value.filter(type => expenses.value.some(e => e.type === type.id)))
-const expensesTotal = computed(() => expenses.value.reduce((acc, curr) => acc + curr.vl, 0))
+const expensesTypesWithData = computed(() => expensesTypes.value.filter(type => expenses.value?.some(e => e.type === type.id)))
+const expensesTotal = computed(() => expenses.value?.reduce((acc, curr) => acc + curr.vl, 0) ?? 0)
 
 const stateExpense = ref<Expense>({ vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' })
 
@@ -245,7 +245,7 @@ const incomeSourcesSummary = computed(() => {
   return typeIds.map(typeId => {
     const income = salaries.filter(s => s.type === typeId).reduce((acc, curr) => acc + curr.vl, 0)
 
-    const spent = expenses.value.filter(e => e.paymentMethod === typeId).reduce((acc, curr) => acc + curr.vl, 0)
+    const spent = expenses.value?.filter(e => e.paymentMethod === typeId).reduce((acc, curr) => acc + curr.vl, 0) ?? 0
 
     const leftoverPerSource = income - spent
     const match = salaryTypes.value.find(s => s.id === typeId)
@@ -311,7 +311,7 @@ const incomeSourcesSummary = computed(() => {
               </p>
 
               <UBadge class="mt-2 border border-slate-500/60 bg-slate-800/70 text-white">
-                {{ t('expenses') }}: {{ expenses.length }}
+                {{ t('expenses') }}: {{ expenses ? expenses.length : 0 }}
               </UBadge>
             </div>
 
@@ -412,7 +412,7 @@ const incomeSourcesSummary = computed(() => {
           </div>
         </UCard>
 
-        <UCard v-if="data.length" data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
+        <UCard v-if="data && data.length" data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/12 via-rose-400/5 to-transparent" />
 
           <div class="relative z-10 space-y-5">
@@ -599,12 +599,12 @@ const incomeSourcesSummary = computed(() => {
               <div class="space-y-3">
                 <div class="flex items-center justify-between text-[0.7rem] text-slate-400">
                   <span>{{ t('expenses_section.by_category') }}</span>
-                  <span v-if="expenses.length" class="italic">
+                  <span v-if="expenses && expenses.length" class="italic">
                     {{ t('expenses_section.tip_focus') }}
                   </span>
                 </div>
 
-                <div v-if="!expenses.length" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
+                <div v-if="!expenses || !expenses.length" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
                   <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
                     <UIcon name="i-lucide-pie-chart" class="h-5 w-5 text-slate-300" />
                   </div>
@@ -647,7 +647,7 @@ const incomeSourcesSummary = computed(() => {
                 </div>
               </div>
 
-              <div v-if="expenses.length" class="mt-4">
+              <div v-if="expenses && expenses.length" class="mt-4">
                 <div class="space-y-2 rounded-xl bg-slate-900/70 p-3 ring-1 ring-slate-700/50">
                   <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                     {{ t('expenses_section.by_payment_method') }}
@@ -769,7 +769,7 @@ const incomeSourcesSummary = computed(() => {
 
               <div class="flex flex-col items-end gap-1">
                 <UBadge class="mt-1 border border-rose-400/40 bg-rose-500/10 text-rose-200">
-                  {{ t('expenses') }}: {{ expenses.length }}
+                  {{ t('expenses') }}: {{ expenses ? expenses.length : 0 }}
                 </UBadge>
                 <p class="text-xs text-slate-400">
                   {{ expensesTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
@@ -778,7 +778,7 @@ const incomeSourcesSummary = computed(() => {
             </div>
 
             <div class="max-h-80 space-y-3 overflow-y-auto pr-2">
-              <div v-if="expenses.length === 0" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
+              <div v-if="expenses && expenses.length === 0" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
                   <UIcon name="i-lucide-credit-card" class="h-5 w-5 text-slate-300" />
                 </div>
