@@ -53,26 +53,26 @@ const monthsToShow = ref(months.value.slice(0, currentMonthIndex + 1).toReversed
 const selectedMonth = ref(monthsToShow.value[0])
 
 const expensesTypes = ref([
-  t('expenses_types.food'),
-  t('expenses_types.shopping'),
-  t('expenses_types.transportation'),
-  t('expenses_types.healthcare'),
-  t('expenses_types.housing'),
-  t('expenses_types.utilities'),
-  t('expenses_types.education'),
-  t('expenses_types.entertainment'),
-  t('expenses_types.bills'),
-  t('expenses_types.miscellaneous'),
-  t('expenses_types.investments'),
-  t('expenses_types.others'),
+  { label: t('expenses_types.food'), id: 'food' },
+  { label: t('expenses_types.shopping'), id: 'shopping' },
+  { label: t('expenses_types.transportation'), id: 'transportation' },
+  { label: t('expenses_types.healthcare'), id: 'healthcare' },
+  { label: t('expenses_types.housing'), id: 'housing' },
+  { label: t('expenses_types.utilities'), id: 'utilities' },
+  { label: t('expenses_types.education'), id: 'education' },
+  { label: t('expenses_types.entertainment'), id: 'entertainment' },
+  { label: t('expenses_types.bills'), id: 'bills' },
+  { label: t('expenses_types.miscellaneous'), id: 'miscellaneous' },
+  { label: t('expenses_types.investments'), id: 'investments' },
+  { label: t('expenses_types.others'), id: 'others' },
 ])
 
 const salaryTypes = ref([
-  t('salary'),
-  t('salary_types.freelance'),
-  t('salary_types.investments'),
-  t('salary_types.benefits'),
-  t('salary_types.others'),
+  { label: t('salary'), id: 'salary' },
+  { label: t('salary_types.freelance'), id: 'freelance' },
+  { label: t('salary_types.investments'), id: 'investments' },
+  { label: t('salary_types.benefits'), id: 'benefits' },
+  { label: t('salary_types.others'), id: 'others' },
 ])
 
 const mes = computed(() => {
@@ -310,9 +310,9 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                  {{ t('salary_section.type') }}
+                  {{ t('salary_section.type') }} {{ stateSalary.type }}
                 </p>
-                <USelectMenu v-model="stateSalary.type" :items="salaryTypes" size="md" :placeholder="t('salary_section.type')" class="w-full" />
+                <USelectMenu v-model="stateSalary.type" label-key="label" value-key="id" :items="salaryTypes" size="md" :placeholder="t('salary_section.type')" class="w-full" />
               </div>
 
               <div class="space-y-1">
@@ -374,7 +374,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 
                       <div class="mt-1 flex flex-wrap items-center gap-2 text-xs">
                         <UBadge class="border border-slate-500/60 bg-slate-800/80 text-slate-100">
-                          {{ item.type || t('salary_types.others') }}
+                          {{ item.type === 'salary' ? t('salary') : item.type === 'freelance' ? t('salary_types.freelance') : item.type === 'investments' ? t('salary_types.investments') : item.type === 'benefits' ? t('salary_types.benefits') : t('salary_types.others') }}
                         </UBadge>
 
                         <span class="text-slate-400">
