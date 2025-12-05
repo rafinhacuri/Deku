@@ -17,6 +17,7 @@ func main() {
 
 	converter.Add(goRes{})
 	converter.Add(controllers.AuthResponse{})
+	converter.Add(controllers.Salary{})
 
 	converter.BackupDir = ""
 	converter.CreateInterface = true

@@ -32,7 +32,7 @@ func InitSqlite() (*sql.DB, error) {
 			value REAL NOT NULL,
 			type TEXT NOT NULL,
 			day INTEGER,
-			month DATE NOT NULL,
+			month TEXT NOT NULL,
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			

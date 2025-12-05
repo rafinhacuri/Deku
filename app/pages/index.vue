@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import type { Salary } from '~~/shared/types/goServer'
+import { SalarySchema } from '~/utils/salary.schema'
+
 definePageMeta({
   colorMode: 'dark',
 })
 
 const { t, setLocale, setLocaleCookie, locale } = useI18n()
-const { user, clearUserSession } = useUserSession()
+const { clearUserSession } = useUserSession()
+const toast = useToast()
+const { isLoading, start, finish } = useLoadingIndicator()
 
 useHead({ title: t('header.title') })
 useSeoMeta({ description: t('header.subtitle') })
@@ -44,8 +49,8 @@ const months = ref([
 ])
 
 const currentMonthIndex = new Date().getMonth()
-const monthsToShow = months.value.slice(0, currentMonthIndex + 1).toReversed()
-const selectedMonth = ref(monthsToShow[0])
+const monthsToShow = ref(months.value.slice(0, currentMonthIndex + 1).toReversed())
+const selectedMonth = ref(monthsToShow.value[0])
 
 const expensesTypes = ref([
   t('expenses_types.food'),
@@ -70,23 +75,37 @@ const salaryTypes = ref([
   t('salary_types.others'),
 ])
 
-const salary = ref<{ value: number, type: string, day: number | undefined, month: Date, user: string }[]>([])
-const salaryTotal = computed(() => salary.value.reduce((acc, curr) => acc + curr.value, 0))
-const newValueSalary = ref(0)
-const newTypeSalary = ref('')
-const newDaySalary = ref<number | undefined>(undefined)
+const salary = ref<Salary[]>([])
+const salaryTotal = computed(() => salary.value.reduce((acc, curr) => acc + curr.vl, 0))
 
-function addSalaryEntry(value: number, type: string, day: number | undefined){
+const stateSalary = ref<Salary>({ vl: 0, type: '', day: undefined, month: '' })
+
+async function addSalaryEntry(){
+  start()
   const now = new Date()
   const monthIndex = selectedMonth.value ? months.value.indexOf(selectedMonth.value) : currentMonthIndex
   now.setMonth(monthIndex)
   now.setDate(1)
   now.setHours(0, 0, 0, 0)
-  salary.value.push({ value, type, day, month: now, user: user.value.username })
 
-  newValueSalary.value = 0
-  newTypeSalary.value = ''
-  newDaySalary.value = undefined
+  stateSalary.value.month = now.toISOString()
+
+  const body = SalarySchema.safeParse(stateSalary.value)
+
+  if(!body.success){
+    for(const e of body.error.issues) toast.add({ title: e.message, icon: 'i-lucide-shield-alert', color: 'error' })
+    return finish({ error: true })
+  }
+
+  const res = await $fetch<goRes>('/server/api/salary', { method: 'PUT', body: body.data })
+    .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
+
+  if(!res) return finish({ error: true })
+
+  // refresh()
+  finish({ force: true })
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+  stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
 }
 
 const expenses = ref<{ value: number, type: string | undefined, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: Date }[]>([])
@@ -105,8 +124,8 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
       <template #right>
         <div class="flex items-center space-x-3">
           <USelectMenu v-model="selectedMonth" :items="monthsToShow" size="sm" :placeholder="t('header.month_placeholder')" />
-          <UButton variant="outline" size="sm" :icon="isEn ? 'i-circle-flags-us' : 'i-circle-flags-br'" :color="isEn ? 'info' : 'primary'" @click="changeLanguage" />
-          <UButton variant="outline" color="neutral" size="sm" icon="i-lucide-log-out" @click="logout()" />
+          <UButton :loading="isLoading" variant="outline" size="sm" :icon="isEn ? 'i-circle-flags-us' : 'i-circle-flags-br'" :color="isEn ? 'info' : 'primary'" @click="changeLanguage" />
+          <UButton :loading="isLoading" variant="outline" color="neutral" size="sm" icon="i-lucide-log-out" @click="logout()" />
         </div>
       </template>
     </UHeader>
@@ -224,27 +243,27 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                  {{ t('salary_section.value') }}
+                  {{ t('salary_section.value') }} {{ stateSalary.vl }}
                 </p>
-                <UInputNumber v-model="newValueSalary" :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" />
+                <UInputNumber v-model="stateSalary.vl" :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" />
               </div>
 
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                   {{ t('salary_section.type') }}
                 </p>
-                <USelectMenu v-model="newTypeSalary" :items="salaryTypes" size="md" :placeholder="t('salary_section.type')" class="w-full" />
+                <USelectMenu v-model="stateSalary.type" :items="salaryTypes" size="md" :placeholder="t('salary_section.type')" class="w-full" />
               </div>
 
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                   {{ t('salary_section.day') }}
                 </p>
-                <UInputNumber v-model="newDaySalary" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
+                <UInputNumber v-model="stateSalary.day" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
               </div>
             </div>
 
-            <UButton class="mt-2 flex w-full items-center justify-center gap-2" color="primary" icon="i-lucide-plus" variant="solid" @click="addSalaryEntry(newValueSalary, newTypeSalary, newDaySalary)">
+            <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="primary" icon="i-lucide-plus" variant="solid" @click="addSalaryEntry">
               <span>{{ t('salary_section.add_salary') }}</span>
             </UButton>
           </div>
@@ -291,7 +310,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 
                     <div class="flex flex-col">
                       <span class="text-sm font-semibold text-white">
-                        {{ item.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                        {{ item.vl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
                       </span>
 
                       <div class="mt-1 flex flex-wrap items-center gap-2 text-xs">
@@ -301,10 +320,10 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 
                         <span class="text-slate-400">
                           <span v-if="item.day">
-                            {{ item.day.toString().padStart(2, '0') }}/{{ (item.month.getMonth() + 1).toString().padStart(2, '0') }}/{{ item.month.getFullYear() }}
+                            {{ item.day.toString().padStart(2, '0') }}/{{ (new Date(item.month).getMonth() + 1).toString().padStart(2, '0') }}/{{ new Date(item.month).getFullYear() }}
                           </span>
                           <span v-else>
-                            {{ (item.month.getMonth() + 1).toString().padStart(2, '0') }}/{{ item.month.getFullYear() }}
+                            {{ (new Date(item.month).getMonth() + 1).toString().padStart(2, '0') }}/{{ new Date(item.month).getFullYear() }}
                           </span>
                         </span>
                       </div>
@@ -312,8 +331,8 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <UButton color="info" variant="ghost" icon="i-lucide-pencil" size="xs" />
-                    <UButton color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
+                    <UButton :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" />
+                    <UButton :loading="isLoading" color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
                   </div>
                 </div>
               </div>

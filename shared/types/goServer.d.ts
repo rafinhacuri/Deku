@@ -7,3 +7,9 @@ export interface AuthResponse{
   message: string,
   token?: string,
 }
+export interface Salary{
+  vl: number,
+  type: string,
+  day?: number,
+  month: string,
+}

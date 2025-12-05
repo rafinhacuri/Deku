@@ -20,4 +20,6 @@ func RegisterRoutes(server *gin.Engine) {
 
 	api := server.Group("/api", middleware.Authenticate)
 	api.GET("/check-session", middleware.CheckSession)
+
+	api.PUT("/salary", controllers.InsertSalary)
 }
