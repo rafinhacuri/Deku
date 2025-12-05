@@ -1,6 +1,5 @@
 {
   "confirm": "Confirm",
-  "cancel": "Cancel",
   "header": {
     "title": "Deku",
     "subtitle": "Your personal finance dashboard",
@@ -51,6 +50,7 @@
     "type": "Type",
     "day": "Day",
     "add_salary": "Add income",
+    "edit_salary": "Edit income",
     "history": "Income history",
     "empty_title": "No income added yet",
     "empty_subtitle": "Add your income to see it listed here.",

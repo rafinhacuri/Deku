@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Salary, SalaryResponse } from '~~/shared/types/goServer'
 import { SalarySchema } from '~/utils/salary.schema'
 
 definePageMeta({
@@ -122,6 +123,49 @@ async function deleteSalary(id: number){
   refresh()
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+}
+
+const isEditing = ref(false)
+
+const stateEditSalaryId = ref<number>(0)
+
+function initEdit(line: SalaryResponse){
+  stateSalary.value.vl = line.vl
+  stateSalary.value.type = line.type
+  stateSalary.value.day = line.day
+  stateEditSalaryId.value = line.id
+  isEditing.value = true
+}
+
+function cancelEdit(){
+  stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
+  stateEditSalaryId.value = 0
+  isEditing.value = false
+}
+
+async function updateSalary(){
+  start()
+
+  stateSalary.value.month = mes.value
+
+  const body = SalarySchema.safeParse(stateSalary.value)
+
+  if(!body.success){
+    for(const e of body.error.issues) toast.add({ title: e.message, icon: 'i-lucide-shield-alert', color: 'error' })
+    return finish({ error: true })
+  }
+
+  const res = await $fetch<goRes>('/server/api/salary', { method: 'POST', query: { id: stateEditSalaryId.value }, body: body.data })
+    .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
+
+  if(!res) return finish({ error: true })
+
+  refresh()
+  finish({ force: true })
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+  stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
+  stateEditSalaryId.value = 0
+  isEditing.value = false
 }
 
 const expenses = ref<{ value: number, type: string | undefined, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: Date }[]>([])
@@ -279,9 +323,8 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
               </div>
             </div>
 
-            <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="primary" icon="i-lucide-plus" variant="solid" @click="addSalaryEntry">
-              <span>{{ t('salary_section.add_salary') }}</span>
-            </UButton>
+            <UButton v-if="isEditing" :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="info" icon="i-lucide-edit" variant="solid" :label="t('salary_section.edit_salary')" @click="updateSalary" />
+            <UButton v-else :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="primary" icon="i-lucide-plus" variant="solid" :label="t('salary_section.add_salary')" @click="addSalaryEntry" />
           </div>
         </UCard>
 
@@ -347,8 +390,9 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
                   </div>
 
                   <div class="flex items-center gap-2">
-                    <UButton :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" />
-                    <UPopover arrow>
+                    <UButton v-if="!isEditing" :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" @click="initEdit(item)" />
+                    <UButton v-else-if="isEditing && stateEditSalaryId === item.id" :loading="isLoading" color="error" variant="ghost" icon="i-lucide-x" size="xs" @click="cancelEdit" />
+                    <UPopover v-if="!isEditing" arrow>
                       <UButton :loading="isLoading" color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
 
                       <template #content="{close}">

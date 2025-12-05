@@ -108,3 +108,38 @@ func DeleteSalary(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "Income deleted successfully"})
 }
+
+func UpdateSalary(c *gin.Context) {
+	id := c.Query("id")
+	var salary Salary
+	if err := c.ShouldBindJSON(&salary); err != nil {
+		c.JSON(400, gin.H{"message": err.Error()})
+		return
+	}
+
+	row, err := sqlite.SQL.Exec("UPDATE salary SET value = ?, type = ?, day = ?, updated_at = ? WHERE id = ?",
+		salary.Vl,
+		salary.Type,
+		salary.Day,
+		time.Now().Format(time.RFC3339),
+		id,
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	rowsAffected, err := row.RowsAffected()
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	if rowsAffected == 0 {
+		c.JSON(404, gin.H{"message": "Salary not found"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Salary updated successfully"})
+}
