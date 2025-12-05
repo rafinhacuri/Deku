@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"sort"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -74,6 +75,25 @@ func GetExpenses(c *gin.Context) {
 			return
 		}
 		expenses = append(expenses, exp)
+	}
+
+	sort.SliceStable(expenses, func(i, j int) bool {
+		var dayI, dayJ int
+		if expenses[i].Day != nil {
+			dayI = *expenses[i].Day
+		} else {
+			dayI = 32
+		}
+		if expenses[j].Day != nil {
+			dayJ = *expenses[j].Day
+		} else {
+			dayJ = 32
+		}
+		return dayI < dayJ
+	})
+
+	for i, j := 0, len(expenses)-1; i < j; i, j = i+1, j-1 {
+		expenses[i], expenses[j] = expenses[j], expenses[i]
 	}
 
 	c.JSON(200, expenses)

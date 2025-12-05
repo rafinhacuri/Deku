@@ -83,6 +83,10 @@ func GetSalaries(c *gin.Context) {
 		return dayI < dayJ
 	})
 
+	for i, j := 0, len(salaries)-1; i < j; i, j = i+1, j-1 {
+		salaries[i], salaries[j] = salaries[j], salaries[i]
+	}
+
 	c.JSON(200, salaries)
 }
 
