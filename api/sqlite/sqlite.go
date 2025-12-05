@@ -38,6 +38,21 @@ func InitSqlite() (*sql.DB, error) {
 			
 			FOREIGN KEY (user) REFERENCES users(id) ON DELETE CASCADE
 		);
+
+		CREATE TABLE IF NOT EXISTS expenses (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user INTEGER NOT NULL,
+			value REAL NOT NULL,
+			type TEXT NOT NULL,
+			day INTEGER,
+			month TEXT NOT NULL,
+			paymentMethod TEXT NOT NULL,
+			description TEXT,
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			
+			FOREIGN KEY (user) REFERENCES users(id) ON DELETE CASCADE
+		);
 	`)
 	if err != nil {
 		return nil, err

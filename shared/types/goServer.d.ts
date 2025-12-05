@@ -20,3 +20,11 @@ export interface SalaryResponse{
   day?: number,
   month: string,
 }
+export interface Expense{
+  vl: number,
+  type: string,
+  description?: string,
+  day?: number,
+  paymentMethod: string,
+  month: string,
+}

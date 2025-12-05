@@ -196,8 +196,33 @@ const paymentsMethods = computed(() => {
 
 const expensesTypesWithData = computed(() => expensesTypes.value.filter(type => expenses.value.some(e => e.type === type.id)))
 
-const expenses = ref<{ vl: number, type: string, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: Date }[]>([])
+const expenses = ref<{ vl: number, type: string, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: string }[]>([])
 const expensesTotal = computed(() => expenses.value.reduce((acc, curr) => acc + curr.vl, 0))
+
+const stateExpense = ref<Expense>({ vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' })
+
+async function addExpense(){
+  start()
+
+  stateExpense.value.month = mes.value
+
+  const body = ExpenseSchema.safeParse(stateExpense.value)
+
+  if(!body.success){
+    for(const e of body.error.issues) toast.add({ title: e.message, icon: 'i-lucide-shield-alert', color: 'error' })
+    return finish({ error: true })
+  }
+
+  const res = await $fetch<goRes>('/server/api/expense', { method: 'PUT', body: body.data })
+    .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
+
+  if(!res) return finish({ error: true })
+
+  refresh()
+  finish({ force: true })
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+  stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
+}
 
 const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 </script>
@@ -340,14 +365,14 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                   {{ t('salary_section.type') }} {{ stateSalary.type }}
                 </p>
-                <USelectMenu v-model="stateSalary.type" label-key="label" value-key="id" :items="salaryTypes" size="md" :placeholder="t('salary_section.type')" class="w-full" />
+                <USelectMenu v-model="stateSalary.type" label-key="label" value-key="id" :items="salaryTypes" size="md" class="w-full" />
               </div>
 
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                   {{ t('salary_section.day') }}
                 </p>
-                <UInputNumber v-model="stateSalary.day" :placeholder="t('salary_section.day')" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
+                <UInputNumber v-model="stateSalary.day" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
               </div>
             </div>
 
@@ -473,28 +498,28 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
                   <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                     {{ t('expenses_section.value') }}
                   </p>
-                  <UInputNumber :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" :placeholder="t('expenses_section.value_placeholder')" />
+                  <UInputNumber v-model="stateExpense.vl" :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" />
                 </div>
 
                 <div class="space-y-1">
                   <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                     {{ t('expenses_section.type') }}
                   </p>
-                  <USelectMenu label-key="label" value-key="id" :items="expensesTypes" size="md" class="w-full" :placeholder="t('expenses_section.type_placeholder')" />
+                  <USelectMenu v-model="stateExpense.type" label-key="label" value-key="id" :items="expensesTypes" size="md" class="w-full" />
                 </div>
 
                 <div class="space-y-1">
                   <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                     {{ t('expenses_section.day') }}
                   </p>
-                  <UInputNumber :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" :placeholder="t('expenses_section.day_placeholder')" />
+                  <UInputNumber v-model="stateExpense.day" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
                 </div>
 
                 <div class="space-y-1">
                   <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                     {{ t('expenses_section.payment_method') }}
                   </p>
-                  <USelectMenu label-key="label" value-key="id" :items="paymentsMethods" size="md" class="w-full" :placeholder="t('expenses_section.payment_method')" />
+                  <USelectMenu v-model="stateExpense.paymentMethod" label-key="label" value-key="id" :items="paymentsMethods" size="md" class="w-full" />
                 </div>
               </div>
 
@@ -502,12 +527,10 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
                   {{ t('expenses_section.description') }}
                 </p>
-                <UTextarea :rows="3" resize="none" class="w-full" :placeholder="t('expenses_section.description_placeholder')" />
+                <UTextarea v-model="stateExpense.description" :rows="3" resize="none" class="w-full" />
               </div>
 
-              <UButton :loading="isLoading" class="mt-1 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-minus-circle" variant="solid">
-                {{ t('expenses_section.add_expense') }}
-              </UButton>
+              <UButton :loading="isLoading" class="mt-1 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-minus-circle" variant="solid" :label="t('expenses_section.add_expense')" @click="addExpense" />
             </div>
           </UCard>
 
