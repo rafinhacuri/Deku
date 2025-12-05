@@ -58,7 +58,6 @@
     "delete_confirmation": "Are you sure you want to delete this income? This action cannot be undone.",
     "sources_overview": "Visão por fonte de renda",
     "sources_overview_subtitle": "Veja quanto ainda resta de cada tipo de receita após os seus gastos.",
-    "per_source": "Por origem",
     "sources_empty_title": "Nenhuma fonte de renda encontrada",
     "sources_empty_subtitle": "Cadastre pelo menos um salário ou outra receita para ver o resumo por origem.",
     "source_income_label": "Recebido: ",

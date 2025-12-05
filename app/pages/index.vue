@@ -493,10 +493,6 @@ const incomeSourcesSummary = computed(() => {
                     {{ t('salary_section.sources_overview_subtitle') }}
                   </p>
                 </div>
-
-                <UBadge class="mt-1 border border-emerald-400/40 bg-emerald-500/10 text-emerald-200">
-                  {{ t('salary_section.per_source') }}
-                </UBadge>
               </div>
 
               <div class="space-y-2">
