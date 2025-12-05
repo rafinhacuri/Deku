@@ -44,3 +44,37 @@ func InsertExpense(c *gin.Context) {
 
 	c.JSON(201, gin.H{"message": "Expense inserted successfully"})
 }
+
+type ExpenseResponse struct {
+	ID            int     `json:"id"`
+	Vl            float64 `json:"vl" binding:"required"`
+	Type          string  `json:"type" binding:"required"`
+	Description   *string `json:"description"`
+	Day           *int    `json:"day"`
+	PaymentMethod string  `json:"paymentMethod" binding:"required"`
+	Month         string  `json:"month" binding:"required"`
+}
+
+func GetExpenses(c *gin.Context) {
+	userID := c.GetString("username")
+	month := c.Query("month")
+
+	rows, err := sqlite.SQL.Query("SELECT id, value, type, day, paymentMethod, description, month FROM expenses WHERE user = ? AND month = ?", userID, month)
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+	defer rows.Close()
+
+	var expenses []ExpenseResponse
+	for rows.Next() {
+		var exp ExpenseResponse
+		if err := rows.Scan(&exp.ID, &exp.Vl, &exp.Type, &exp.Day, &exp.PaymentMethod, &exp.Description, &exp.Month); err != nil {
+			c.JSON(500, gin.H{"message": err.Error()})
+			return
+		}
+		expenses = append(expenses, exp)
+	}
+
+	c.JSON(200, expenses)
+}

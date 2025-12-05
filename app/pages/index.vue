@@ -69,7 +69,9 @@ const mes = computed(() => {
   return now.toISOString()
 })
 
-const { data, refresh } = await useFetch<SalaryResponse[]>('/server/api/salary', { method: 'GET', query: { month: mes } })
+const { data, refresh } = await useFetch<SalaryResponse[]>('/server/api/salary', { method: 'GET', query: { month: mes }, default: () => [] as SalaryResponse[] })
+const { data: expenses, refresh: refreshExpenses } = await useFetch<ExpenseResponse[]>('/server/api/expense', { method: 'GET', query: { month: mes }, default: () => [] as ExpenseResponse[] })
+
 const salaryTotal = computed(() => data.value ? data.value.reduce((acc, curr) => acc + curr.vl, 0) : 0)
 
 const stateSalary = ref<Salary>({ vl: 0, type: '', day: undefined, month: '' })
@@ -205,8 +207,6 @@ const paymentsMethods = computed(() => {
 })
 
 const expensesTypesWithData = computed(() => expensesTypes.value.filter(type => expenses.value.some(e => e.type === type.id)))
-
-const expenses = ref<{ vl: number, type: string, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: string }[]>([])
 const expensesTotal = computed(() => expenses.value.reduce((acc, curr) => acc + curr.vl, 0))
 
 const stateExpense = ref<Expense>({ vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' })
@@ -228,6 +228,7 @@ async function addExpense(){
 
   if(!res) return finish({ error: true })
 
+  refreshExpenses()
   refresh()
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
@@ -411,7 +412,7 @@ const incomeSourcesSummary = computed(() => {
           </div>
         </UCard>
 
-        <UCard data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
+        <UCard v-if="data.length" data-aos="zoom-in" class="relative overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/12 via-rose-400/5 to-transparent" />
 
           <div class="relative z-10 space-y-5">
@@ -530,11 +531,11 @@ const incomeSourcesSummary = computed(() => {
                       </div>
 
                       <div class="text-right">
-                        <p class="text-sm font-semibold" :class="source.leftover >= 0 ? 'text-emerald-300' : 'text-rose-400'">
-                          {{ source.leftover.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
-                        </p>
                         <p class="text-[0.65rem] text-slate-400">
                           {{ t('salary_section.source_leftover_label') }}
+                        </p>
+                        <p class="text-sm font-semibold" :class="source.leftover >= 0 ? 'text-emerald-300' : 'text-rose-400'">
+                          {{ source.leftover.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
                         </p>
                       </div>
                     </div>
@@ -549,7 +550,7 @@ const incomeSourcesSummary = computed(() => {
 
                       <div class="h-2 w-full overflow-hidden rounded-full bg-slate-800">
                         <!-- eslint-disable-next-line vue/no-restricted-v-bind -->
-                        <div class="h-2 rounded-full bg-emerald-400" :style="{ width: source.income ? Math.max(4, Math.min(100, Math.round((source.leftover / source.income) * 100))) + '%' : '0%'}" />
+                        <div v-if="source.leftover !== 0" class="h-2 rounded-full" :class="source.leftover > 0 ? 'bg-emerald-400' : 'bg-rose-400'" :style="{ width: source.income ? Math.max( 4, Math.min(100, Math.round(Math.abs(source.leftover / source.income) * 100)), ) + '%' : '0%', }" />
                       </div>
                     </div>
                   </div>

@@ -27,4 +27,5 @@ func RegisterRoutes(server *gin.Engine) {
 	api.POST("/salary", controllers.UpdateSalary)
 
 	api.PUT("/expense", controllers.InsertExpense)
+	api.GET("/expense", controllers.GetExpenses)
 }

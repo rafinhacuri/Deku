@@ -28,3 +28,12 @@ export interface Expense{
   paymentMethod: string,
   month: string,
 }
+export interface ExpenseResponse{
+  id: number,
+  vl: number,
+  type: string,
+  description?: string,
+  day?: number,
+  paymentMethod: string,
+  month: string,
+}
