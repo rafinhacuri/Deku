@@ -225,6 +225,23 @@ async function addExpense(){
 }
 
 const leftover = computed(() => salaryTotal.value - expensesTotal.value)
+
+const incomeSourcesSummary = computed(() => {
+  const salaries = data.value ?? []
+
+  const typeIds = [...new Set(salaries.map(s => s.type))]
+
+  return typeIds.map(typeId => {
+    const income = salaries.filter(s => s.type === typeId).reduce((acc, curr) => acc + curr.vl, 0)
+
+    const spent = expenses.value.filter(e => e.paymentMethod === typeId).reduce((acc, curr) => acc + curr.vl, 0)
+
+    const leftoverPerSource = income - spent
+    const match = salaryTypes.value.find(s => s.id === typeId)
+
+    return { id: typeId, label: match ? match.label : typeId, income, spent, leftover: leftoverPerSource }
+  })
+})
 </script>
 
 <template>
@@ -466,6 +483,93 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
           </div>
         </UCard>
       </div>
+
+      <UCard class="relative mt-8 overflow-hidden rounded-2xl border border-slate-600/40 bg-slate-900/80 shadow-xl backdrop-blur-xl">
+        <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-emerald-400/12 via-cyan-300/4 to-transparent" />
+
+        <div class="relative z-10 space-y-4">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 class="text-lg font-semibold tracking-wide text-white">
+                {{ t('salary_section.sources_overview') }}
+              </h2>
+              <p class="mt-1 text-xs text-slate-400">
+                {{ t('salary_section.sources_overview_subtitle') }}
+              </p>
+            </div>
+
+            <UBadge class="mt-1 border border-emerald-400/40 bg-emerald-500/10 text-emerald-200">
+              {{ t('salary_section.per_source') }}
+            </UBadge>
+          </div>
+
+          <div
+            v-if="!incomeSourcesSummary.length"
+            class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-8 text-center"
+          >
+            <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
+              <UIcon name="i-lucide-piggy-bank" class="h-5 w-5 text-slate-300" />
+            </div>
+            <p class="text-sm font-medium text-slate-200">
+              {{ t('salary_section.sources_empty_title') }}
+            </p>
+            <p class="text-xs text-slate-400">
+              {{ t('salary_section.sources_empty_subtitle') }}
+            </p>
+          </div>
+
+          <div v-else class="space-y-2">
+            <div
+              v-for="source in incomeSourcesSummary"
+              :key="source.id"
+              class="space-y-2 rounded-xl bg-slate-900/70 px-3 py-2 ring-1 ring-slate-700/50"
+            >
+              <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-400/10 ring-1 ring-emerald-400/40">
+                    <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-emerald-300" />
+                  </span>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-medium text-slate-100">
+                      {{ source.label }}
+                    </span>
+                    <span class="text-[0.7rem] text-slate-400">
+                      {{ t('salary_section.source_income_label') }}
+                      {{ source.income.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="text-right">
+                  <p
+                    class="text-sm font-semibold"
+                    :class="source.leftover >= 0 ? 'text-emerald-300' : 'text-rose-400'"
+                  >
+                    {{ source.leftover.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                  </p>
+                  <p class="text-[0.65rem] text-slate-400">
+                    {{ t('salary_section.source_leftover_label') }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="space-y-1 text-[0.7rem] text-slate-300">
+                <div class="flex items-center justify-between">
+                  <span>{{ t('salary_section.source_spent_label') }}</span>
+                  <span class="text-rose-300">
+                    {{ source.spent.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                  </span>
+                </div>
+
+                <div class="h-2 w-full overflow-hidden rounded-full bg-slate-800">
+                  <!-- eslint-disable-next-line vue/no-restricted-v-bind -->
+                  <div class="h-2 rounded-full bg-emerald-400" :style="{ width: source.income ? Math.max(4, Math.min(100, Math.round((source.leftover / source.income) * 100))) + '%' : '0%'}" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </UCard>
 
       <div class="mt-10 space-y-6">
         <div class="grid grid-cols-1 gap-6 xl:grid-cols-5">
