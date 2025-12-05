@@ -25,6 +25,19 @@ func InitSqlite() (*sql.DB, error) {
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
+
+		CREATE TABLE IF NOT EXISTS salary (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user INTEGER NOT NULL,
+			value REAL NOT NULL,
+			type TEXT NOT NULL,
+			day INTEGER,
+			month DATE NOT NULL,
+			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			
+			FOREIGN KEY (user) REFERENCES users(id) ON DELETE CASCADE
+		);
 	`)
 	if err != nil {
 		return nil, err
