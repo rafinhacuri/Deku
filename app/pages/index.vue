@@ -617,7 +617,11 @@ const incomeSourcesSummary = computed(() => {
                 </div>
 
                 <div v-else class="space-y-2">
-                  <div v-for="type in expensesTypesWithData" :key="type.id" class="space-y-1 rounded-xl bg-slate-900/70 px-3 py-2 ring-1 ring-slate-700/50">
+                  <div
+                    v-for="type in expensesTypesWithData"
+                    :key="type.id"
+                    class="space-y-2 rounded-xl bg-slate-900/70 px-3 py-2 ring-1 ring-slate-700/50"
+                  >
                     <div class="flex items-center justify-between text-xs">
                       <div class="flex items-center gap-2">
                         <span
@@ -631,7 +635,7 @@ const incomeSourcesSummary = computed(() => {
 
                       <div class="flex flex-col text-right">
                         <span class="text-[0.7rem] text-slate-400">
-                          {{ Math.floor( expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.vl, 0)/ (expensesTotal || 1) * 100) }}%
+                          {{ Math.floor( expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.vl, 0) / (expensesTotal || 1) * 100,) }}%
                         </span>
                         <span class="text-[0.7rem] font-medium text-slate-200">
                           {{ expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.vl, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
@@ -641,25 +645,21 @@ const incomeSourcesSummary = computed(() => {
 
                     <div class="overflow-hiddxen h-2 w-full rounded-full bg-slate-800">
                       <!-- eslint-disable-next-line vue/no-restricted-v-bind -->
-                      <div class="h-2 rounded-full" :class="expenseTypeColorMap[type.id]?.bar || 'bg-rose-400'" :style="{ width: expensesTotal ? Math.max(4, Math.round(expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.vl, 0) / expensesTotal * 100)) + '%' : '0%' }" />
+                      <div class="h-2 rounded-full" :class="expenseTypeColorMap[type.id]?.bar || 'bg-rose-400'" :style="{ width: expensesTotal ? Math.max( 4, Math.round( expenses .filter(e => e.type === type.id) .reduce((acc, curr) => acc + curr.vl, 0) / expensesTotal * 100, ), ) + '%' : '0%', }" />
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              <div v-if="expenses && expenses.length" class="mt-4">
-                <div class="space-y-2 rounded-xl bg-slate-900/70 p-3 ring-1 ring-slate-700/50">
-                  <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                    {{ t('expenses_section.by_payment_method') }}
-                  </p>
-                  <div class="space-y-1 text-xs text-slate-200">
-                    <div v-for="method in paymentsMethods" :key="method.id" class="flex items-center justify-between rounded-lg bg-slate-900/90 px-2 py-1.5">
-                      <span class="text-slate-300">
-                        {{ method.label || t('expenses_section.no_payment_method') }}
-                      </span>
-                      <span class="font-semibold text-rose-300">
-                        {{ expenses.filter(e => e.paymentMethod === method.id).reduce((acc, curr) => acc + curr.vl, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
-                      </span>
+                    <div v-if="paymentsMethods.length" class="mt-1 space-y-0.5">
+                      <template v-for="method in paymentsMethods" :key="method.id + '-' + type.id">
+                        <div v-if="expenses.some(e => e.type === type.id && e.paymentMethod === method.id)" class="flex items-center justify-between text-[0.65rem] text-slate-400">
+                          <span class="flex items-center gap-1">
+                            <span class="h-1 w-1 rounded-full bg-slate-500" />
+                            <span>{{ method.label || t('expenses_section.no_payment_method') }}</span>
+                          </span>
+                          <span class="text-[0.65rem] text-slate-200">
+                            {{ expenses.filter(e => e.type === type.id && e.paymentMethod === method.id).reduce((acc, curr) => acc + curr.vl, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                          </span>
+                        </div>
+                      </template>
                     </div>
                   </div>
                 </div>
