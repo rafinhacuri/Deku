@@ -196,8 +196,8 @@ const paymentsMethods = computed(() => {
 
 const expensesTypesWithData = computed(() => expensesTypes.value.filter(type => expenses.value.some(e => e.type === type.id)))
 
-const expenses = ref<{ value: number, type: string, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: Date }[]>([])
-const expensesTotal = computed(() => expenses.value.reduce((acc, curr) => acc + curr.value, 0))
+const expenses = ref<{ vl: number, type: string, description: string | undefined, day: number | undefined, paymentMethod: string, user: string, month: Date }[]>([])
+const expensesTotal = computed(() => expenses.value.reduce((acc, curr) => acc + curr.vl, 0))
 
 const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 </script>
@@ -583,17 +583,17 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 
                       <div class="flex flex-col text-right">
                         <span class="text-[0.7rem] text-slate-400">
-                          {{ Math.floor( expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.value, 0)/ (expensesTotal || 1) * 100) }}%
+                          {{ Math.floor( expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.vl, 0)/ (expensesTotal || 1) * 100) }}%
                         </span>
                         <span class="text-[0.7rem] font-medium text-slate-200">
-                          {{ expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.value, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                          {{ expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.vl, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
                         </span>
                       </div>
                     </div>
 
                     <div class="overflow-hiddxen h-2 w-full rounded-full bg-slate-800">
                       <!-- eslint-disable-next-line vue/no-restricted-v-bind -->
-                      <div class="h-2 rounded-full" :class="expenseTypeColorMap[type.id]?.bar || 'bg-rose-400'" :style="{ width: expensesTotal ? Math.max(4, Math.round(expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.value, 0) / expensesTotal * 100)) + '%' : '0%' }" />
+                      <div class="h-2 rounded-full" :class="expenseTypeColorMap[type.id]?.bar || 'bg-rose-400'" :style="{ width: expensesTotal ? Math.max(4, Math.round(expenses.filter(e => e.type === type.id).reduce((acc, curr) => acc + curr.vl, 0) / expensesTotal * 100)) + '%' : '0%' }" />
                     </div>
                   </div>
                 </div>
@@ -610,7 +610,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
                         {{ method.label || t('expenses_section.no_payment_method') }}
                       </span>
                       <span class="font-semibold text-rose-300">
-                        {{ expenses.filter(e => e.paymentMethod === method.id).reduce((acc, curr) => acc + curr.value, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                        {{ expenses.filter(e => e.paymentMethod === method.id).reduce((acc, curr) => acc + curr.vl, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
                       </span>
                     </div>
                   </div>
@@ -667,7 +667,7 @@ const leftover = computed(() => salaryTotal.value - expensesTotal.value)
 
                       <div class="flex flex-col">
                         <span class="text-sm font-semibold text-white">
-                          {{ item.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                          {{ item.vl.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
                         </span>
 
                         <div class="mt-1 flex flex-wrap items-center gap-2 text-xs">
