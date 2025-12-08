@@ -5,17 +5,15 @@ import (
 )
 
 type EnvConfig struct {
-	JWT_SECRET  string
-	CRYPT_KEY   string
-	SQLITE_PATH string
+	JWT_SECRET string
+	CRYPT_KEY  string
 }
 
 var C *EnvConfig
 
 func LoadEnv() {
 	C = &EnvConfig{
-		JWT_SECRET:  os.Getenv("JWT_SECRET"),
-		CRYPT_KEY:   os.Getenv("CRYPT_KEY"),
-		SQLITE_PATH: os.Getenv("SQLITE_PATH"),
+		JWT_SECRET: os.Getenv("JWT_SECRET"),
+		CRYPT_KEY:  os.Getenv("CRYPT_KEY"),
 	}
 }

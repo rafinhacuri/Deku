@@ -3,7 +3,6 @@ package sqlite
 import (
 	"context"
 	"database/sql"
-	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -12,7 +11,7 @@ var SQL *sql.DB
 
 func InitSqlite() (*sql.DB, error) {
 	var err error
-	SQL, err = sql.Open("sqlite3", os.Getenv("SQLITE_PATH"))
+	SQL, err = sql.Open("sqlite3", "/database/db.sqlite")
 	if err != nil {
 		return nil, err
 	}
