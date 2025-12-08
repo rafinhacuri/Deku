@@ -109,11 +109,10 @@ async function deleteSalary(id: number){
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
 }
 
-const salary = useTemplateRef<HTMLElement>('salary')
-
 const { y } = useWindowScroll({ behavior: 'smooth' })
 
-function scrollToDestiny(){
+const salary = useTemplateRef<HTMLElement>('salary')
+function scrollToSalary(){
   if(salary.value){
     y.value = salary.value.scrollHeight
   }
@@ -128,7 +127,7 @@ function initEdit(line: SalaryResponse){
   stateSalary.value.day = line.day
   stateEditSalaryId.value = line.id
   isEditing.value = true
-  scrollToDestiny()
+  scrollToSalary()
 }
 
 function cancelEdit(){
@@ -232,9 +231,6 @@ async function addExpense(){
   stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
 }
 
-const isEditingExpense = ref(false)
-const stateEditExpenseId = ref(0)
-
 async function deleteExpense(id: number){
   start()
 
@@ -247,6 +243,59 @@ async function deleteExpense(id: number){
   refresh()
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+}
+
+const isEditingExpense = ref(false)
+const stateEditExpenseId = ref(0)
+
+const expense = useTemplateRef<HTMLElement>('expense')
+function scrollToExpense(){
+  if(expense.value){
+    y.value = expense.value.scrollHeight
+  }
+}
+
+function initEditExpense(line: ExpenseResponse){
+  stateExpense.value.vl = line.vl
+  stateExpense.value.type = line.type
+  stateExpense.value.day = line.day
+  stateExpense.value.description = line.description
+  stateExpense.value.paymentMethod = line.paymentMethod
+  stateEditExpenseId.value = line.id
+  isEditingExpense.value = true
+  scrollToExpense()
+}
+
+function cancelEditExpense(){
+  stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
+  stateEditExpenseId.value = 0
+  isEditingExpense.value = false
+}
+
+async function updateExpense(){
+  start()
+
+  stateExpense.value.month = mes.value
+
+  const body = ExpenseSchema.safeParse(stateExpense.value)
+
+  if(!body.success){
+    for(const e of body.error.issues) toast.add({ title: e.message, icon: 'i-lucide-shield-alert', color: 'error' })
+    return finish({ error: true })
+  }
+
+  const res = await $fetch<goRes>('/server/api/expense', { method: 'POST', query: { id: stateEditExpenseId.value }, body: body.data })
+    .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
+
+  if(!res) return finish({ error: true })
+
+  refreshExpenses()
+  refresh()
+  finish({ force: true })
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+  stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
+  stateEditExpenseId.value = 0
+  isEditingExpense.value = false
 }
 
 const leftover = computed(() => salaryTotal.value - expensesTotal.value)
@@ -430,7 +479,7 @@ const incomeSourcesSummary = computed(() => {
           <div class="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/12 via-rose-400/5 to-transparent" />
 
           <div class="relative z-10 space-y-5">
-            <div class="flex items-start justify-between gap-3">
+            <div ref="expense" class="flex items-start justify-between gap-3">
               <div>
                 <h2 class="text-lg font-semibold tracking-wide text-white">
                   {{ t('expenses_section.title') }}
@@ -487,7 +536,11 @@ const incomeSourcesSummary = computed(() => {
               <UTextarea v-model="stateExpense.description" :rows="3" resize="none" class="w-full" />
             </div>
 
-            <UButton :loading="isLoading" class="mt-1 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-minus-circle" variant="solid" :label="t('expenses_section.add_expense')" @click="addExpense" />
+            <div v-if="isEditingExpense" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="info" icon="i-lucide-edit" variant="solid" :label="t('expenses_section.edit_expense')" @click="updateExpense" />
+              <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-x" variant="solid" :label="t('cancel')" @click="cancelEditExpense" />
+            </div>
+            <UButton v-else :loading="isLoading" class="mt-1 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-minus-circle" variant="solid" :label="t('expenses_section.add_expense')" @click="addExpense" />
           </div>
         </UCard>
       </div>
@@ -835,8 +888,8 @@ const incomeSourcesSummary = computed(() => {
                     </div>
 
                     <div class="flex items-center gap-2">
-                      <UButton v-if="!isEditingExpense" :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" @click="initEdit(item)" />
-                      <UButton v-else-if="isEditingExpense && stateEditExpenseId === item.id" :loading="isLoading" color="error" variant="ghost" icon="i-lucide-x" size="xs" @click="cancelEdit" />
+                      <UButton v-if="!isEditingExpense" :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" @click="initEditExpense(item)" />
+                      <UButton v-else-if="isEditingExpense && stateEditExpenseId === item.id" :loading="isLoading" color="error" variant="ghost" icon="i-lucide-x" size="xs" @click="cancelEditExpense" />
                       <UPopover v-if="!isEditingExpense" arrow>
                         <UButton :loading="isLoading" color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
 

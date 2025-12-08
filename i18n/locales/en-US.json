@@ -101,7 +101,8 @@
     "history_subtitle": "Track every outgoing transaction registered this month.",
     "empty_title": "No expenses registered",
     "empty_subtitle": "Start by adding your daily expenses to better track your budget.",
-    "delete_confirmation": "Are you sure you want to delete this expense? This action cannot be undone."
+    "delete_confirmation": "Are you sure you want to delete this expense? This action cannot be undone.",
+    "edit_expense": "Edit expense"
   },
   "leftover": "Leftover",
   "everything_earned": "Everything earned this month",
