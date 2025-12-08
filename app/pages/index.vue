@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import type { Salary, SalaryResponse } from '~~/shared/types/goServer'
-import { SalarySchema } from '~/utils/salary.schema'
-
 definePageMeta({
   colorMode: 'dark',
 })
@@ -788,7 +785,7 @@ const incomeSourcesSummary = computed(() => {
 
               <div v-else>
                 <div v-for="(item, index) in expenses" :key="index" class="flex flex-col gap-3 rounded-xl border border-slate-600/40 bg-slate-900/70 px-3 py-3 transition hover:border-rose-400/60 hover:bg-slate-900">
-                  <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                       <div class="flex h-9 w-9 items-center justify-center rounded-full bg-rose-400/10 ring-1 ring-rose-400/40">
                         <UIcon name="i-lucide-shopping-bag" class="h-4 w-4 text-rose-300" />
@@ -818,6 +815,23 @@ const incomeSourcesSummary = computed(() => {
                           </span>
                         </div>
                       </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      <UButton
+                        :loading="isLoading"
+                        color="info"
+                        variant="ghost"
+                        icon="i-lucide-pencil"
+                        size="xs"
+                      />
+                      <UButton
+                        :loading="isLoading"
+                        color="error"
+                        variant="ghost"
+                        icon="i-lucide-trash"
+                        size="xs"
+                      />
                     </div>
                   </div>
 
