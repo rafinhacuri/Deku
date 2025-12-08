@@ -67,7 +67,20 @@ const mes = computed(() => {
 })
 
 const { data, refresh } = await useFetch<SalaryResponse[]>('/server/api/salary', { method: 'GET', query: { month: mes } })
+
 const { data: expenses, refresh: refreshExpenses } = await useFetch<ExpenseResponse[]>('/server/api/expense', { method: 'GET', query: { month: mes } })
+
+const page = ref(1)
+const itemsPerPage = ref(10)
+
+const paginetedExpenses = computed(() => {
+  if(!expenses.value) return []
+
+  const start = (page.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+
+  return expenses.value.slice(start, end)
+})
 
 const salaryTotal = computed(() => data.value ? data.value.reduce((acc, curr) => acc + curr.vl, 0) : 0)
 
@@ -226,9 +239,10 @@ async function addExpense(){
 
   refreshExpenses()
   refresh()
+  page.value = 1
+  stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
-  stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
 }
 
 async function deleteExpense(id: number){
@@ -241,6 +255,7 @@ async function deleteExpense(id: number){
 
   refreshExpenses()
   refresh()
+  page.value = 1
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
 }
@@ -291,11 +306,12 @@ async function updateExpense(){
 
   refreshExpenses()
   refresh()
-  finish({ force: true })
-  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
+  page.value = 1
   stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
   stateEditExpenseId.value = 0
   isEditingExpense.value = false
+  finish({ force: true })
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
 }
 
 const leftover = computed(() => salaryTotal.value - expensesTotal.value)
@@ -840,7 +856,7 @@ const incomeSourcesSummary = computed(() => {
               </div>
             </div>
 
-            <div class="max-h-80 space-y-3 overflow-y-auto pr-2">
+            <div class="space-y-3">
               <div v-if="!expenses || !expenses.length" class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600/40 bg-slate-800/40 py-10 text-center">
                 <div class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-600/60 bg-slate-900/80">
                   <UIcon name="i-lucide-credit-card" class="h-5 w-5 text-slate-300" />
@@ -854,7 +870,7 @@ const incomeSourcesSummary = computed(() => {
               </div>
 
               <div v-else>
-                <div v-for="(item, index) in expenses" :key="index" class="flex flex-col gap-3 rounded-xl border border-slate-600/40 bg-slate-900/70 px-3 py-3 transition hover:border-rose-400/60 hover:bg-slate-900">
+                <div v-for="(item, index) in paginetedExpenses" :key="index" class="flex flex-col gap-3 rounded-xl border border-slate-600/40 bg-slate-900/70 px-3 py-3 transition hover:border-rose-400/60 hover:bg-slate-900">
                   <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
                       <div class="flex h-9 w-9 items-center justify-center rounded-full bg-rose-400/10 ring-1 ring-rose-400/40">
@@ -913,6 +929,7 @@ const incomeSourcesSummary = computed(() => {
                 </div>
               </div>
             </div>
+            <UPagination v-if="expenses && expenses.length > 10" v-model:page="page" :items-per-page="itemsPerPage" :total="expenses.length" />
           </div>
         </UCard>
       </div>
