@@ -120,7 +120,7 @@ function scrollToDestiny(){
 }
 
 const isEditing = ref(false)
-const stateEditSalaryId = ref<number>(0)
+const stateEditSalaryId = ref(0)
 
 function initEdit(line: SalaryResponse){
   stateSalary.value.vl = line.vl
@@ -230,6 +230,23 @@ async function addExpense(){
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
   stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
+}
+
+const isEditingExpense = ref(false)
+const stateEditExpenseId = ref(0)
+
+async function deleteExpense(id: number){
+  start()
+
+  const res = await $fetch<goRes>('/server/api/expense', { method: 'DELETE', query: { id } })
+    .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
+
+  if(!res) return finish({ error: true })
+
+  refreshExpenses()
+  refresh()
+  finish({ force: true })
+  toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
 }
 
 const leftover = computed(() => salaryTotal.value - expensesTotal.value)
@@ -818,20 +835,22 @@ const incomeSourcesSummary = computed(() => {
                     </div>
 
                     <div class="flex items-center gap-2">
-                      <UButton
-                        :loading="isLoading"
-                        color="info"
-                        variant="ghost"
-                        icon="i-lucide-pencil"
-                        size="xs"
-                      />
-                      <UButton
-                        :loading="isLoading"
-                        color="error"
-                        variant="ghost"
-                        icon="i-lucide-trash"
-                        size="xs"
-                      />
+                      <UButton v-if="!isEditingExpense" :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" @click="initEdit(item)" />
+                      <UButton v-else-if="isEditingExpense && stateEditExpenseId === item.id" :loading="isLoading" color="error" variant="ghost" icon="i-lucide-x" size="xs" @click="cancelEdit" />
+                      <UPopover v-if="!isEditingExpense" arrow>
+                        <UButton :loading="isLoading" color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
+
+                        <template #content="{ close }">
+                          <div class="max-w-xs space-y-3 p-3">
+                            <p class="text-sm text-slate-200">
+                              {{ t('expenses_section.delete_confirmation') }}
+                            </p>
+                            <div class="flex items-center justify-end gap-2">
+                              <UButton :loading="isLoading" variant="solid" color="error" size="sm" :label="t('confirm')" @click="deleteExpense(item.id), close()" />
+                            </div>
+                          </div>
+                        </template>
+                      </UPopover>
                     </div>
                   </div>
 
