@@ -98,3 +98,27 @@ func GetExpenses(c *gin.Context) {
 
 	c.JSON(200, expenses)
 }
+
+func DeleteExpense(c *gin.Context) {
+	expenseID := c.Query("id")
+	userID := c.GetString("username")
+
+	result, err := sqlite.SQL.Exec("DELETE FROM expenses WHERE id = ? AND user = ?", expenseID, userID)
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	if rowsAffected == 0 {
+		c.JSON(404, gin.H{"message": "Expense not found"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Expense deleted successfully"})
+}
