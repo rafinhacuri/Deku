@@ -11,12 +11,11 @@ RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o api .
 
 FROM oven/bun:1-debian
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && update-ca-certificates && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /main
 
 COPY ./package.json ./bun.lock ./nuxt.config.ts ./tsconfig.json ./
 RUN --mount=type=cache,target=/root/.bun/install/cache bun install
+RUN bun add ofetch
 
 COPY ./app ./app
 COPY ./public ./public
