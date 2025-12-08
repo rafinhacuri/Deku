@@ -58,5 +58,10 @@
     "bumpp": "^10.3.2",
     "eslint": "^9.39.1",
     "vue-tsc": "^3.1.5"
-  }
+  },
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "@tailwindcss/oxide",
+    "unrs-resolver"
+  ]
 }
