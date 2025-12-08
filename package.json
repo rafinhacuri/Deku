@@ -58,6 +58,7 @@
     "@dethdkn/eslint-config": "^4.0.3",
     "bumpp": "^10.3.2",
     "eslint": "^9.39.1",
+    "vitepress": "^1.6.4",
     "vue-tsc": "^3.1.5"
   },
   "trustedDependencies": [
