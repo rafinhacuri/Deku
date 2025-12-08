@@ -122,3 +122,44 @@ func DeleteExpense(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "Expense deleted successfully"})
 }
+
+func UpdateExpense(c *gin.Context) {
+	var expense Expense
+	if err := c.ShouldBindJSON(&expense); err != nil {
+		c.JSON(400, gin.H{"message": err.Error()})
+		return
+	}
+
+	expenseID := c.Query("id")
+	userID := c.GetString("username")
+
+	result, err := sqlite.SQL.Exec("UPDATE expenses SET value = ?, type = ?, day = ?, paymentMethod = ?, description = ?, month = ?, updated_at = ? WHERE id = ? AND user = ?",
+		expense.Vl,
+		expense.Type,
+		expense.Day,
+		expense.PaymentMethod,
+		expense.Description,
+		expense.Month,
+		time.Now().Format(time.RFC3339),
+		expenseID,
+		userID,
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		c.JSON(500, gin.H{"message": err.Error()})
+		return
+	}
+
+	if rowsAffected == 0 {
+		c.JSON(404, gin.H{"message": "Expense not found"})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Expense updated successfully"})
+}
