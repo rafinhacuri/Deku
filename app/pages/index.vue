@@ -695,18 +695,11 @@ const incomeSourcesSummary = computed(() => {
                   </p>
                 </div>
 
-                <div v-else class="space-y-2">
-                  <div
-                    v-for="type in expensesTypesWithData"
-                    :key="type.id"
-                    class="space-y-2 rounded-xl bg-slate-900/70 px-3 py-2 ring-1 ring-slate-700/50"
-                  >
+                <div v-else class="max-h-80 space-y-2 overflow-y-auto pr-2">
+                  <div v-for="type in expensesTypesWithData" :key="type.id" class="space-y-2 rounded-xl bg-slate-900/70 px-3 py-2 ring-1 ring-slate-700/50">
                     <div class="flex items-center justify-between text-xs">
                       <div class="flex items-center gap-2">
-                        <span
-                          class="h-1.5 w-4 rounded-full"
-                          :class="expenseTypeColorMap[type.id]?.chip || 'bg-rose-400/80'"
-                        />
+                        <span class="h-1.5 w-4 rounded-full" :class="expenseTypeColorMap[type.id]?.chip || 'bg-rose-400/80'" />
                         <span class="font-medium text-slate-100">
                           {{ type.label }}
                         </span>
