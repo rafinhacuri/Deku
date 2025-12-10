@@ -7,7 +7,6 @@ const { t } = useI18n()
 
 useHead({ title: t('header.title') })
 useSeoMeta({ description: t('header.subtitle') })
-defineOgImageComponent('Home', { title: t('header.title'), subtitle: t('header.subtitle') })
 
 const toast = useToast()
 const { isLoading, start, finish } = useLoadingIndicator()
