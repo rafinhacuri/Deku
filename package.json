@@ -1,7 +1,7 @@
 {
   "name": "deku",
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "packageManager": "bun@1.3.0",
   "description": "💰 Web application to control your income",
