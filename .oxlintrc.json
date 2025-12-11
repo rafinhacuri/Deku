@@ -1,0 +1,6 @@
+{
+  "extends": ["./node_modules/@dethdkn/ox-config/.oxlintrc.json"],
+  "rules": {
+    "id-length": ["error", { "min": 2, "exceptions": ["x", "y", "i", "s", "e", "t"] }]
+  }
+}

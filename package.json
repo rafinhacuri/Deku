@@ -29,8 +29,10 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "fmt": "oxfmt --check",
+    "fmt:fix": "oxfmt",
+    "lint": "oxlint --type-aware",
+    "lint:fix": "oxlint --type-aware --fix",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "gentypes": "bun run --cwd api/cmd go run typescript.go && eslint shared/types/goServer.d.ts --fix",
@@ -41,13 +43,13 @@
   },
   "dependencies": {
     "@iconify-json/circle-flags": "^1.2.10",
-    "@iconify-json/lucide": "^1.2.78",
+    "@iconify-json/lucide": "^1.2.80",
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "4.2.1",
     "@nuxtjs/i18n": "^10.2.1",
     "@nuxtjs/seo": "^3.2.2",
     "@vueuse/nuxt": "^14.1.0",
-    "nuxt": "^4.2.1",
+    "nuxt": "^4.2.2",
     "nuxt-aos": "^1.2.5",
     "nuxt-security": "^2.5.0",
     "ofetch": "^1.5.1",
@@ -55,11 +57,10 @@
     "vue-router": "^4.6.3"
   },
   "devDependencies": {
-    "@dethdkn/eslint-config": "^4.0.3",
+    "@dethdkn/ox-config": "^1.0.5",
     "bumpp": "^10.3.2",
-    "eslint": "^9.39.1",
     "vitepress": "^1.6.4",
-    "vue-tsc": "^3.1.5"
+    "vue-tsc": "^3.1.8"
   },
   "trustedDependencies": [
     "@parcel/watcher",

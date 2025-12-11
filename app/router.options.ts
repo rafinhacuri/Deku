@@ -1,28 +1,29 @@
-/* eslint-disable no-restricted-globals, typescript/no-explicit-any */
-
 import type { RouterConfig } from '@nuxt/schema'
 
 const RouteOptions: RouterConfig = {
-  scrollBehavior(to, from, savedPosition){
+  scrollBehavior(to, from, savedPosition) {
     const nuxtApp = useNuxtApp()
 
-    if(savedPosition) return new Promise(resolve => {
+    if (savedPosition) {
       nuxtApp.hooks.hookOnce('page:finish', () => {
-        setTimeout(() => resolve(savedPosition), 50)
+        setTimeout(() => {
+          window.scrollTo({ top: savedPosition.top, behavior: 'auto' })
+        }, 50)
       })
-    })
+      return savedPosition
+    }
 
-    if(to.hash){
+    if (to.hash) {
       setTimeout(() => {
-        let heading = document.querySelector(`[id="${to.hash.replace('#', '')}"]`) as any
-        if(!heading) heading = document.querySelector(`[href$="${to.hash}"]`) as any
-        if(!heading) return
-        return window.scrollTo({ top: heading.offsetTop, behavior: 'smooth' })
+        let heading = document.querySelector<HTMLElement>(`[id="${to.hash.replace('#', '')}"]`)
+        if (!heading) heading = document.querySelector<HTMLElement>(`[href$="${to.hash}"]`)
+        if (!heading) return
+        window.scrollTo({ top: heading.offsetTop, behavior: 'smooth' })
       })
       return
     }
 
-    if(from.path !== to.path){
+    if (from.path !== to.path) {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }

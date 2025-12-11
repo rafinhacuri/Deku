@@ -43,6 +43,8 @@
     "freelance": "Freelance",
     "benefits": "Benefits",
     "investments": "Investments",
+    "scholarship": "Scholarship",
+    "allowance": "Allowance",
     "others": "Others"
   },
   "salary_section": {
@@ -69,6 +71,7 @@
     "food": "Food",
     "shopping": "Shopping",
     "transportation": "Transportation",
+    "supermarket": "Supermarket",
     "healthcare": "Healthcare",
     "housing": "Housing",
     "utilities": "Utilities",

@@ -8,13 +8,13 @@ export default createGlobalState(() => {
     token: sessionToken.value,
   }))
 
-  const setUserSession = ({ username, token }: { username: string, token?: string }) => {
+  const setUserSession = ({ username, token }: { username: string; token?: string }): void => {
     userInfo.value.username = username
 
-    if(token) sessionToken.value = token
+    if (token) sessionToken.value = token
   }
 
-  const clearUserSession = () => {
+  const clearUserSession = (): void => {
     userInfo.value = { username: '' }
     sessionToken.value = undefined
   }

@@ -43,6 +43,8 @@
     "freelance": "Freelance",
     "benefits": "Benefícios",
     "investments": "Investimentos",
+    "scholarship": "Bolsa",
+    "allowance": "Mesada",
     "others": "Outros"
   },
   "salary_section": {
@@ -69,6 +71,7 @@
     "food": "Alimentação",
     "shopping": "Compras",
     "transportation": "Transporte",
+    "supermarket": "Supermercado",
     "healthcare": "Saúde",
     "housing": "Moradia",
     "utilities": "Serviços",

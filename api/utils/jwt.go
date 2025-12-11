@@ -19,7 +19,7 @@ func GenerateJWT(mail string) (string, error) {
 		"mail": mail,
 		"iat":  now.Unix(),
 		"nbf":  now.Unix(),
-		"exp":  now.Add(7 * 24 * time.Hour).Unix(),
+		"exp":  now.Add(60 * 24 * time.Hour).Unix(),
 		"iss":  "deku-api",
 	})
 	return token.SignedString([]byte(secret))

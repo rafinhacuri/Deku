@@ -9,7 +9,6 @@
   </UApp>
 </template>
 
-<!-- eslint-disable-next-line vue/no-restricted-block -->
 <style scoped>
 @keyframes fadeIn {
   from {

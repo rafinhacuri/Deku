@@ -1,8 +1,6 @@
 export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxtjs/seo', '@vueuse/nuxt', 'nuxt-security', '@nuxtjs/i18n', '@nuxt/image', 'nuxt-aos'],
-  $development: {
-    security: { headers: { crossOriginEmbedderPolicy: 'unsafe-none' } },
-  },
+  $development: { security: { headers: { crossOriginEmbedderPolicy: 'unsafe-none' } } },
   devtools: { enabled: true },
   app: { head: { templateParams: { separator: '•' } } },
   css: ['~/assets/main.css'],
@@ -11,22 +9,16 @@ export default defineNuxtConfig({
     description: '💰 Web application to control your income',
     indexable: true,
   },
-  routeRules: {
-    '/server/**': { proxy: { to: 'http://localhost:8080/**' } },
-  },
+  routeRules: { '/server/**': { proxy: { to: 'http://localhost:8080/**' } } },
   compatibilityDate: '2025-12-02',
   i18n: {
-    defaultLocale: 'en',
+    defaultLocale: 'pt',
     locales: [
       { code: 'en', language: 'en-US', name: 'English (US)', file: 'en-US.json', flag: 'flag:us-4x3' },
       { code: 'pt', language: 'pt-BR', name: 'Português (BR)', file: 'pt-BR.json', flag: 'flag:br-4x3' },
     ],
   },
   linkChecker: { enabled: false },
-  security: {
-    headers: {
-      contentSecurityPolicy: { 'default-src': ['\'self\''], 'img-src': ['\'self\'', 'data:', 'blob:'] },
-    },
-  },
+  security: { headers: { contentSecurityPolicy: { 'default-src': ['\'self\''], 'img-src': ['\'self\'', 'data:', 'blob:'] } } },
   sitemap: { enabled: false },
 })

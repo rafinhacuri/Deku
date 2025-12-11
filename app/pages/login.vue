@@ -14,7 +14,7 @@ const { setUserSession } = useUserSession()
 
 const state = ref<Auth>({ email: '', password: '' })
 
-function checkStrength(str: string){
+function checkStrength(str: string): { met: boolean, text: string }[] {
   const requirements = [
     { regex: /.{8,}/, text: t('login.week1') },
     { regex: /\d/, text: t('login.week2') },
@@ -47,7 +47,7 @@ const show = ref(false)
 
 const modal = ref(false)
 
-async function login(){
+async function login(): Promise<void> {
   start()
 
   const body = AuthSchema.safeParse(state.value)
@@ -68,7 +68,7 @@ async function login(){
   await navigateTo('/')
 }
 
-async function register(){
+async function register(): Promise<void> {
   start()
 
   const body = AuthSchema.safeParse(state.value)

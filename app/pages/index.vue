@@ -11,7 +11,7 @@ const { isLoading, start, finish } = useLoadingIndicator()
 useHead({ title: t('header.title') })
 useSeoMeta({ description: t('header.subtitle') })
 
-function changeLanguage(){
+function changeLanguage(): void {
   if(locale.value === 'en'){
     setLocale('pt')
     setLocaleCookie('pt')
@@ -24,7 +24,7 @@ function changeLanguage(){
 
 const isEn = computed(() => locale.value === 'en')
 
-async function logout(){
+async function logout(): Promise<void> {
   clearUserSession()
   await navigateTo('/login')
 }
@@ -53,6 +53,8 @@ const salaryTypes = ref([
   { label: t('salary_types.freelance'), id: 'freelance' },
   { label: t('salary_types.investments'), id: 'investments' },
   { label: t('salary_types.benefits'), id: 'benefits' },
+  { label: t('salary_types.scholarship'), id: 'scholarship' },
+  { label: t('salary_types.allowance'), id: 'allowance' },
   { label: t('salary_types.others'), id: 'others' },
 ])
 
@@ -85,7 +87,7 @@ const salaryTotal = computed(() => data.value ? data.value.reduce((acc, curr) =>
 
 const stateSalary = ref<Salary>({ vl: 0, type: '', day: undefined, month: '' })
 
-async function addSalaryEntry(){
+async function addSalaryEntry(): Promise<void> {
   start()
 
   stateSalary.value.month = mes.value
@@ -108,7 +110,7 @@ async function addSalaryEntry(){
   stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
 }
 
-async function deleteSalary(id: number){
+async function deleteSalary(id: number): Promise<void> {
   start()
 
   const res = await $fetch<goRes>('/server/api/salary', { method: 'DELETE', query: { id } })
@@ -124,7 +126,7 @@ async function deleteSalary(id: number){
 const { y } = useWindowScroll({ behavior: 'smooth' })
 
 const salary = useTemplateRef<HTMLElement>('salary')
-function scrollToSalary(){
+function scrollToSalary(): void {
   if(salary.value){
     y.value = salary.value.scrollHeight
   }
@@ -133,7 +135,7 @@ function scrollToSalary(){
 const isEditing = ref(false)
 const stateEditSalaryId = ref(0)
 
-function initEdit(line: SalaryResponse){
+function initEdit(line: SalaryResponse): void {
   stateSalary.value.vl = line.vl
   stateSalary.value.type = line.type
   stateSalary.value.day = line.day
@@ -142,13 +144,13 @@ function initEdit(line: SalaryResponse){
   scrollToSalary()
 }
 
-function cancelEdit(){
+function cancelEdit(): void {
   stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
   stateEditSalaryId.value = 0
   isEditing.value = false
 }
 
-async function updateSalary(){
+async function updateSalary(): Promise<void> {
   start()
 
   stateSalary.value.month = mes.value
@@ -177,6 +179,7 @@ const expensesTypes = ref([
   { label: t('expenses_types.food'), id: 'food' },
   { label: t('expenses_types.shopping'), id: 'shopping' },
   { label: t('expenses_types.transportation'), id: 'transportation' },
+  { label: t('expenses_types.supermarket'), id: 'supermarket' },
   { label: t('expenses_types.healthcare'), id: 'healthcare' },
   { label: t('expenses_types.housing'), id: 'housing' },
   { label: t('expenses_types.utilities'), id: 'utilities' },
@@ -192,6 +195,7 @@ const expenseTypeColorMap: Record<string, { chip: string, bar: string }> = {
   food: { chip: 'bg-emerald-400/80', bar: 'bg-emerald-400' },
   shopping: { chip: 'bg-fuchsia-400/80', bar: 'bg-fuchsia-400' },
   transportation: { chip: 'bg-sky-400/80', bar: 'bg-sky-400' },
+  supermarket: { chip: 'bg-yellow-400/80', bar: 'bg-yellow-400' },
   healthcare: { chip: 'bg-rose-400/80', bar: 'bg-rose-400' },
   housing: { chip: 'bg-amber-400/80', bar: 'bg-amber-400' },
   utilities: { chip: 'bg-cyan-400/80', bar: 'bg-cyan-400' },
@@ -219,7 +223,7 @@ const expensesTotal = computed(() => expenses.value?.reduce((acc, curr) => acc +
 
 const stateExpense = ref<Expense>({ vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' })
 
-async function addExpense(){
+async function addExpense(): Promise<void> {
   start()
 
   stateExpense.value.month = mes.value
@@ -244,7 +248,7 @@ async function addExpense(){
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
 }
 
-async function deleteExpense(id: number){
+async function deleteExpense(id: number): Promise<void> {
   start()
 
   const res = await $fetch<goRes>('/server/api/expense', { method: 'DELETE', query: { id } })
@@ -263,13 +267,13 @@ const isEditingExpense = ref(false)
 const stateEditExpenseId = ref(0)
 
 const expense = useTemplateRef<HTMLElement>('expense')
-function scrollToExpense(){
+function scrollToExpense(): void {
   if(expense.value){
     y.value = expense.value.scrollHeight
   }
 }
 
-function initEditExpense(line: ExpenseResponse){
+function initEditExpense(line: ExpenseResponse): void {
   stateExpense.value.vl = line.vl
   stateExpense.value.type = line.type
   stateExpense.value.day = line.day
@@ -280,13 +284,13 @@ function initEditExpense(line: ExpenseResponse){
   scrollToExpense()
 }
 
-function cancelEditExpense(){
+function cancelEditExpense(): void {
   stateExpense.value = { vl: 0, type: '', day: undefined, month: '', description: undefined, paymentMethod: '' }
   stateEditExpenseId.value = 0
   isEditingExpense.value = false
 }
 
-async function updateExpense(){
+async function updateExpense(): Promise<void> {
   start()
 
   stateExpense.value.month = mes.value
