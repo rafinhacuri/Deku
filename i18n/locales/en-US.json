@@ -24,22 +24,9 @@
     "requeriment_meeted": "requirement met",
     "requeriment_not_meeted": "requirement not met"
   },
-  "months": {
-    "january": "January",
-    "february": "February",
-    "march": "March",
-    "april": "April",
-    "may": "May",
-    "june": "June",
-    "july": "July",
-    "august": "August",
-    "september": "September",
-    "october": "October",
-    "november": "November",
-    "december": "December"
-  },
-  "salary": "Salary",
-  "salary_types": {
+  "income": "Income",
+  "income_types": {
+    "salary": "Salary",
     "freelance": "Freelance",
     "benefits": "Benefits",
     "investments": "Investments",
@@ -47,7 +34,7 @@
     "allowance": "Allowance",
     "others": "Others"
   },
-  "salary_section": {
+  "income_section": {
     "title": "Add new income",
     "value": "Value",
     "type": "Type",

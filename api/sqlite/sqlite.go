@@ -11,7 +11,7 @@ var SQL *sql.DB
 
 func InitSqlite() (*sql.DB, error) {
 	var err error
-	SQL, err = sql.Open("sqlite3", "/database/db.sqlite")
+	SQL, err = sql.Open("sqlite3", "/Users/rafaelcuri/bancos-sqlites/deku/db.sqlite")
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func InitSqlite() (*sql.DB, error) {
 			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 		);
 
-		CREATE TABLE IF NOT EXISTS salary (
+		CREATE TABLE IF NOT EXISTS income (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			user INTEGER NOT NULL,
 			value REAL NOT NULL,

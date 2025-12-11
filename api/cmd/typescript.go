@@ -17,8 +17,8 @@ func main() {
 
 	converter.Add(goRes{})
 	converter.Add(controllers.AuthResponse{})
-	converter.Add(controllers.Salary{})
-	converter.Add(controllers.SalaryResponse{})
+	converter.Add(controllers.Income{})
+	converter.Add(controllers.IncomeResponse{})
 	converter.Add(controllers.Expense{})
 	converter.Add(controllers.ExpenseResponse{})
 

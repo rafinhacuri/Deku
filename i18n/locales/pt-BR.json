@@ -24,22 +24,9 @@
     "requeriment_meeted": "requisito atendido",
     "requeriment_not_meeted": "requisito não atendido"
   },
-  "months": {
-    "january": "Janeiro",
-    "february": "Fevereiro",
-    "march": "Março",
-    "april": "Abril",
-    "may": "Maio",
-    "june": "Junho",
-    "july": "Julho",
-    "august": "Agosto",
-    "september": "Setembro",
-    "october": "Outubro",
-    "november": "Novembro",
-    "december": "Dezembro"
-  },
-  "salary": "Salário",
-  "salary_types": {
+  "income": "Receita",
+  "income_types": {
+    "salary": "Salário",
     "freelance": "Freelance",
     "benefits": "Benefícios",
     "investments": "Investimentos",
@@ -47,13 +34,13 @@
     "allowance": "Mesada",
     "others": "Outros"
   },
-  "salary_section": {
+  "income_section": {
     "title": "Adicionar nova receita",
     "value": "Valor",
     "type": "Tipo",
     "day": "Dia",
-    "add_salary": "Adicionar receita",
-    "edit_salary": "Editar receita",
+    "add_income": "Adicionar receita",
+    "edit_income": "Editar receita",
     "history": "Histórico de receitas",
     "empty_title": "Nenhuma receita adicionada ainda",
     "empty_subtitle": "Adicione sua receita para vê-la listada aqui.",

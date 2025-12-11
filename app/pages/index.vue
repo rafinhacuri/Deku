@@ -29,47 +29,24 @@ async function logout(): Promise<void> {
   await navigateTo('/login')
 }
 
-const months = ref([
-  t('months.january'),
-  t('months.february'),
-  t('months.march'),
-  t('months.april'),
-  t('months.may'),
-  t('months.june'),
-  t('months.july'),
-  t('months.august'),
-  t('months.september'),
-  t('months.october'),
-  t('months.november'),
-  t('months.december'),
-])
-
 const currentMonthIndex = new Date().getMonth()
-const monthsToShow = ref(months.value.slice(0, currentMonthIndex + 1).toReversed())
-const selectedMonth = ref(monthsToShow.value[0])
+const currentYear = new Date().getFullYear()
+const selectedMonth = ref(new Date(currentYear, currentMonthIndex, 1))
+const selectedMonthString = computed(() => selectedMonth.value.toISOString())
 
-const salaryTypes = ref([
-  { label: t('salary'), id: 'salary' },
-  { label: t('salary_types.freelance'), id: 'freelance' },
-  { label: t('salary_types.investments'), id: 'investments' },
-  { label: t('salary_types.benefits'), id: 'benefits' },
-  { label: t('salary_types.scholarship'), id: 'scholarship' },
-  { label: t('salary_types.allowance'), id: 'allowance' },
-  { label: t('salary_types.others'), id: 'others' },
+const incomeTypes = ref([
+  { label: t('income_types.salary'), id: 'salary' },
+  { label: t('income_types.freelance'), id: 'freelance' },
+  { label: t('income_types.investments'), id: 'investments' },
+  { label: t('income_types.benefits'), id: 'benefits' },
+  { label: t('income_types.scholarship'), id: 'scholarship' },
+  { label: t('income_types.allowance'), id: 'allowance' },
+  { label: t('income_types.others'), id: 'others' },
 ])
 
-const mes = computed(() => {
-  const now = new Date()
-  const monthIndex = selectedMonth.value ? months.value.indexOf(selectedMonth.value) : currentMonthIndex
-  now.setMonth(monthIndex)
-  now.setDate(1)
-  now.setHours(0, 0, 0, 0)
-  return now.toISOString()
-})
+const { data, refresh } = await useFetch<IncomeResponse[]>('/server/api/income', { method: 'GET', query: { month: selectedMonthString } })
 
-const { data, refresh } = await useFetch<SalaryResponse[]>('/server/api/salary', { method: 'GET', query: { month: mes } })
-
-const { data: expenses, refresh: refreshExpenses } = await useFetch<ExpenseResponse[]>('/server/api/expense', { method: 'GET', query: { month: mes } })
+const { data: expenses, refresh: refreshExpenses } = await useFetch<ExpenseResponse[]>('/server/api/expense', { method: 'GET', query: { month: selectedMonthString } })
 
 const page = ref(1)
 const itemsPerPage = ref(10)
@@ -83,23 +60,23 @@ const paginetedExpenses = computed(() => {
   return expenses.value.slice(start, end)
 })
 
-const salaryTotal = computed(() => data.value ? data.value.reduce((acc, curr) => acc + curr.vl, 0) : 0)
+const incomeTotal = computed(() => data.value ? data.value.reduce((acc, curr) => acc + curr.vl, 0) : 0)
 
-const stateSalary = ref<Salary>({ vl: 0, type: '', day: undefined, month: '' })
+const incomeState = ref<Income>({ vl: 0, type: '', day: undefined, month: '' })
 
-async function addSalaryEntry(): Promise<void> {
+async function addIncome(): Promise<void> {
   start()
 
-  stateSalary.value.month = mes.value
+  incomeState.value.month = selectedMonthString.value
 
-  const body = SalarySchema.safeParse(stateSalary.value)
+  const body = IncomeSchema.safeParse(incomeState.value)
 
   if(!body.success){
     for(const e of body.error.issues) toast.add({ title: e.message, icon: 'i-lucide-shield-alert', color: 'error' })
     return finish({ error: true })
   }
 
-  const res = await $fetch<goRes>('/server/api/salary', { method: 'PUT', body: body.data })
+  const res = await $fetch<goRes>('/server/api/income', { method: 'PUT', body: body.data })
     .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
 
   if(!res) return finish({ error: true })
@@ -107,13 +84,13 @@ async function addSalaryEntry(): Promise<void> {
   refresh()
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
-  stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
+  incomeState.value = { vl: 0, type: '', day: undefined, month: '' }
 }
 
-async function deleteSalary(id: number): Promise<void> {
+async function deleteIncome(id: number): Promise<void> {
   start()
 
-  const res = await $fetch<goRes>('/server/api/salary', { method: 'DELETE', query: { id } })
+  const res = await $fetch<goRes>('/server/api/income', { method: 'DELETE', query: { id } })
     .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
 
   if(!res) return finish({ error: true })
@@ -133,36 +110,36 @@ function scrollToSalary(): void {
 }
 
 const isEditing = ref(false)
-const stateEditSalaryId = ref(0)
+const stateEditIncomeId = ref(0)
 
-function initEdit(line: SalaryResponse): void {
-  stateSalary.value.vl = line.vl
-  stateSalary.value.type = line.type
-  stateSalary.value.day = line.day
-  stateEditSalaryId.value = line.id
+function initEdit(line: IncomeResponse): void {
+  incomeState.value.vl = line.vl
+  incomeState.value.type = line.type
+  incomeState.value.day = line.day
+  stateEditIncomeId.value = line.id
   isEditing.value = true
   scrollToSalary()
 }
 
 function cancelEdit(): void {
-  stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
-  stateEditSalaryId.value = 0
+  incomeState.value = { vl: 0, type: '', day: undefined, month: '' }
+  stateEditIncomeId.value = 0
   isEditing.value = false
 }
 
-async function updateSalary(): Promise<void> {
+async function updateIncome(): Promise<void> {
   start()
 
-  stateSalary.value.month = mes.value
+  incomeState.value.month = selectedMonthString.value
 
-  const body = SalarySchema.safeParse(stateSalary.value)
+  const body = IncomeSchema.safeParse(incomeState.value)
 
   if(!body.success){
     for(const e of body.error.issues) toast.add({ title: e.message, icon: 'i-lucide-shield-alert', color: 'error' })
     return finish({ error: true })
   }
 
-  const res = await $fetch<goRes>('/server/api/salary', { method: 'POST', query: { id: stateEditSalaryId.value }, body: body.data })
+  const res = await $fetch<goRes>('/server/api/income', { method: 'POST', query: { id: stateEditIncomeId.value }, body: body.data })
     .catch(error => { toast.add({ title: error.data.message, icon: 'i-lucide-shield-alert', color: 'error' }) })
 
   if(!res) return finish({ error: true })
@@ -170,8 +147,8 @@ async function updateSalary(): Promise<void> {
   refresh()
   finish({ force: true })
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
-  stateSalary.value = { vl: 0, type: '', day: undefined, month: '' }
-  stateEditSalaryId.value = 0
+  incomeState.value = { vl: 0, type: '', day: undefined, month: '' }
+  stateEditIncomeId.value = 0
   isEditing.value = false
 }
 
@@ -213,7 +190,7 @@ const paymentsMethods = computed(() => {
   const typesInMonth = [...new Set(data.value.map(s => s.type))]
 
   return typesInMonth.map(typeId => {
-    const match = salaryTypes.value.find(s => s.id === typeId)
+    const match = incomeTypes.value.find(s => s.id === typeId)
     return { id: typeId, label: match ? match.label : typeId }
   })
 })
@@ -226,7 +203,7 @@ const stateExpense = ref<Expense>({ vl: 0, type: '', day: undefined, month: '', 
 async function addExpense(): Promise<void> {
   start()
 
-  stateExpense.value.month = mes.value
+  stateExpense.value.month = selectedMonthString.value
 
   const body = ExpenseSchema.safeParse(stateExpense.value)
 
@@ -293,7 +270,7 @@ function cancelEditExpense(): void {
 async function updateExpense(): Promise<void> {
   start()
 
-  stateExpense.value.month = mes.value
+  stateExpense.value.month = selectedMonthString.value
 
   const body = ExpenseSchema.safeParse(stateExpense.value)
 
@@ -317,20 +294,20 @@ async function updateExpense(): Promise<void> {
   toast.add({ title: res.message, icon: 'i-lucide-badge-check', color: 'success' })
 }
 
-const leftover = computed(() => salaryTotal.value - expensesTotal.value)
+const leftover = computed(() => incomeTotal.value - expensesTotal.value)
 
 const incomeSourcesSummary = computed(() => {
-  const salaries = data.value ?? []
+  const incomes = data.value ?? []
 
-  const typeIds = [...new Set(salaries.map(s => s.type))]
+  const typeIds = [...new Set(incomes.map(s => s.type))]
 
   return typeIds.map(typeId => {
-    const income = salaries.filter(s => s.type === typeId).reduce((acc, curr) => acc + curr.vl, 0)
+    const income = incomes.filter(s => s.type === typeId).reduce((acc, curr) => acc + curr.vl, 0)
 
     const spent = expenses.value?.filter(e => e.paymentMethod === typeId).reduce((acc, curr) => acc + curr.vl, 0) ?? 0
 
     const leftoverPerSource = income - spent
-    const match = salaryTypes.value.find(s => s.id === typeId)
+    const match = incomeTypes.value.find(s => s.id === typeId)
 
     return { id: typeId, label: match ? match.label : typeId, income, spent, leftover: leftoverPerSource }
   })
@@ -346,7 +323,7 @@ const incomeSourcesSummary = computed(() => {
       </template>
       <template #right>
         <div class="flex items-center space-x-3">
-          <USelectMenu v-model="selectedMonth" :items="monthsToShow" size="sm" :placeholder="t('header.month_placeholder')" />
+          <MonthCalendar v-model="selectedMonth" />
           <UButton :loading="isLoading" variant="outline" size="sm" :icon="isEn ? 'i-circle-flags-us' : 'i-circle-flags-br'" :color="isEn ? 'info' : 'primary'" @click="changeLanguage" />
           <UButton :loading="isLoading" variant="outline" color="neutral" size="sm" icon="i-lucide-log-out" @click="logout()" />
         </div>
@@ -360,16 +337,16 @@ const incomeSourcesSummary = computed(() => {
           <div class="relative z-10 flex justify-between">
             <div>
               <p class="text-[0.7rem] tracking-widest text-slate-400 uppercase">
-                {{ t('salary') }}
+                {{ t('income') }}
               </p>
               <p class="text-xl font-semibold text-emerald-400">
-                {{ salaryTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
+                {{ incomeTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
               </p>
               <p class="text-xs text-slate-400">
                 {{ t('everything_earned') }}
               </p>
               <UBadge class="mt-2 border border-slate-500/60 bg-slate-800/70 text-white">
-                {{ t('salary') }}: {{ data ? data.length : 0 }}
+                {{ t('income') }}: {{ data ? data.length : 0 }}
               </UBadge>
             </div>
           </div>
@@ -401,7 +378,7 @@ const incomeSourcesSummary = computed(() => {
               <div class="relative flex h-14 w-14 items-center justify-center rounded-full border border-dashed border-slate-500/50">
                 <span class="absolute top-1 left-4 h-2 w-2 rounded-full bg-white shadow" />
                 <span class="text-sm font-medium text-rose-400">
-                  {{ salaryTotal > 0 ? Math.round((expensesTotal / salaryTotal) * 100) : 0 }}%
+                  {{ incomeTotal > 0 ? Math.round((expensesTotal / incomeTotal) * 100) : 0 }}%
                 </span>
               </div>
             </div>
@@ -430,7 +407,7 @@ const incomeSourcesSummary = computed(() => {
               <div class="relative flex h-14 w-14 items-center justify-center rounded-full border border-dashed border-slate-500/50">
                 <span class="absolute top-1 left-4 h-2 w-2 rounded-full bg-white shadow" />
                 <span class="text-sm font-medium" :class="[ leftover >= 0 ? 'text-emerald-300' : 'text-rose-400' ]">
-                  {{ salaryTotal > 0 ? Math.round((leftover / salaryTotal) * 100) : 0 }}%
+                  {{ incomeTotal > 0 ? Math.round((leftover / incomeTotal) * 100) : 0 }}%
                 </span>
               </div>
             </div>
@@ -446,7 +423,7 @@ const incomeSourcesSummary = computed(() => {
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h2 class="text-lg font-semibold tracking-wide text-white">
-                  {{ t('salary_section.title') }}
+                  {{ t('income_section.title') }}
                 </h2>
                 <p class="mt-1 text-xs text-slate-400">
                   {{ t('everything_earned') }}
@@ -455,42 +432,40 @@ const incomeSourcesSummary = computed(() => {
 
               <div class="flex flex-col items-end gap-1">
                 <UBadge class="border border-emerald-400/40 bg-emerald-500/10 text-emerald-300">
-                  {{ t('salary') }}
+                  {{ t('income') }}
                 </UBadge>
-                <p class="text-xs text-slate-400">
-                  {{ selectedMonth }}
-                </p>
+                <NuxtTime class="text-xs text-slate-400" :datetime="selectedMonth" month="2-digit" year="numeric" />
               </div>
             </div>
 
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                  {{ t('salary_section.value') }} {{ stateSalary.vl }}
+                  {{ t('income_section.value') }}
                 </p>
-                <UInputNumber v-model="stateSalary.vl" :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" />
+                <UInputNumber v-model="incomeState.vl" :min="0" :step="0.01" locale="pt-BR" :format-options="{ style: 'currency', currency: 'BRL', currencyDisplay: 'symbol', currencySign: 'accounting', minimumFractionDigits: 2, maximumFractionDigits: 2 }" class="w-full" size="md" />
               </div>
 
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                  {{ t('salary_section.type') }} {{ stateSalary.type }}
+                  {{ t('income_section.type') }} {{ incomeState.type }}
                 </p>
-                <USelectMenu v-model="stateSalary.type" label-key="label" value-key="id" :items="salaryTypes" size="md" class="w-full" />
+                <USelectMenu v-model="incomeState.type" label-key="label" value-key="id" :items="incomeTypes" size="md" class="w-full" />
               </div>
 
               <div class="space-y-1">
                 <p class="text-[0.68rem] font-medium tracking-wide text-slate-400 uppercase">
-                  {{ t('salary_section.day') }}
+                  {{ t('income_section.day') }}
                 </p>
-                <UInputNumber v-model="stateSalary.day" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
+                <UInputNumber v-model="incomeState.day" :min="1" :max="31" :step="1" locale="pt-BR" size="md" class="w-full" />
               </div>
             </div>
 
             <div v-if="isEditing" class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="info" icon="i-lucide-edit" variant="solid" :label="t('salary_section.edit_salary')" @click="updateSalary" />
+              <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="info" icon="i-lucide-edit" variant="solid" :label="t('income_section.edit_income')" @click="updateIncome" />
               <UButton :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="error" icon="i-lucide-x" variant="solid" :label="t('cancel')" @click="cancelEdit" />
             </div>
-            <UButton v-else :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="primary" icon="i-lucide-plus" variant="solid" :label="t('salary_section.add_salary')" @click="addSalaryEntry" />
+            <UButton v-else :loading="isLoading" class="mt-2 flex w-full items-center justify-center gap-2" color="primary" icon="i-lucide-plus" variant="solid" :label="t('income_section.add_income')" @click="addIncome" />
           </div>
         </UCard>
 
@@ -512,9 +487,7 @@ const incomeSourcesSummary = computed(() => {
                 <UBadge class="border border-rose-400/40 bg-rose-500/10 text-rose-300">
                   {{ t('expenses') }}
                 </UBadge>
-                <p class="text-xs text-slate-400">
-                  {{ selectedMonth }}
-                </p>
+                <NuxtTime class="text-xs text-slate-400" :datetime="selectedMonth" month="2-digit" year="numeric" />
               </div>
             </div>
 
@@ -573,10 +546,10 @@ const incomeSourcesSummary = computed(() => {
               <div class="flex items-start justify-between gap-3">
                 <div>
                   <h2 class="text-lg font-semibold tracking-wide text-white">
-                    {{ t('salary_section.sources_overview') }}
+                    {{ t('income_section.sources_overview') }}
                   </h2>
                   <p class="mt-1 text-xs text-slate-400">
-                    {{ t('salary_section.sources_overview_subtitle') }}
+                    {{ t('income_section.sources_overview_subtitle') }}
                   </p>
                 </div>
               </div>
@@ -587,10 +560,10 @@ const incomeSourcesSummary = computed(() => {
                     <UIcon name="i-lucide-piggy-bank" class="h-5 w-5 text-slate-300" />
                   </div>
                   <p class="text-sm font-medium text-slate-200">
-                    {{ t('salary_section.sources_empty_title') }}
+                    {{ t('income_section.sources_empty_title') }}
                   </p>
                   <p class="text-xs text-slate-400">
-                    {{ t('salary_section.sources_empty_subtitle') }}
+                    {{ t('income_section.sources_empty_subtitle') }}
                   </p>
                 </div>
 
@@ -606,7 +579,7 @@ const incomeSourcesSummary = computed(() => {
                             {{ source.label }}
                           </span>
                           <span class="text-[0.7rem] text-slate-400">
-                            {{ t('salary_section.source_income_label') }}
+                            {{ t('income_section.source_income_label') }}
                             {{ source.income.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
                           </span>
                         </div>
@@ -614,7 +587,7 @@ const incomeSourcesSummary = computed(() => {
 
                       <div class="text-right">
                         <p class="text-[0.65rem] text-slate-400">
-                          {{ t('salary_section.source_leftover_label') }}
+                          {{ t('income_section.source_leftover_label') }}
                         </p>
                         <p class="text-sm font-semibold" :class="source.leftover >= 0 ? 'text-emerald-300' : 'text-rose-400'">
                           {{ source.leftover.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
@@ -624,7 +597,7 @@ const incomeSourcesSummary = computed(() => {
 
                     <div class="space-y-1 text-[0.7rem] text-slate-300">
                       <div class="flex items-center justify-between">
-                        <span>{{ t('salary_section.source_spent_label') }}</span>
+                        <span>{{ t('income_section.source_spent_label') }}</span>
                         <span class="text-rose-300">
                           {{ source.spent.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}
                         </span>
@@ -668,7 +641,7 @@ const incomeSourcesSummary = computed(() => {
                   <div class="relative flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-rose-400/50 bg-rose-500/5">
                     <div class="flex h-12 w-12 items-center justify-center rounded-full bg-slate-950/80 ring-1 ring-rose-400/40">
                       <span class="text-xs font-semibold text-rose-300">
-                        {{ salaryTotal > 0 ? Math.round((expensesTotal / salaryTotal) * 100) : 0 }}%
+                        {{ incomeTotal > 0 ? Math.round((expensesTotal / incomeTotal) * 100) : 0 }}%
                       </span>
                     </div>
                     <span class="pointer-events-none absolute right-1 -bottom-1 rounded-full bg-rose-500 px-1.5 py-0.5 text-[0.6rem] font-semibold text-white shadow-lg">
@@ -750,7 +723,7 @@ const incomeSourcesSummary = computed(() => {
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h2 class="text-lg font-semibold tracking-wide text-white">
-                  {{ t('salary_section.history') }}
+                  {{ t('income_section.history') }}
                 </h2>
                 <p class="mt-1 text-xs text-slate-400">
                   {{ t('everything_earned') }}
@@ -758,7 +731,7 @@ const incomeSourcesSummary = computed(() => {
               </div>
 
               <UBadge class="mt-1 border border-cyan-400/40 bg-cyan-500/10 text-cyan-200">
-                {{ t('salary') }}: {{ data ? data.length : 0 }}
+                {{ t('income') }}: {{ data ? data.length : 0 }}
               </UBadge>
             </div>
 
@@ -768,10 +741,10 @@ const incomeSourcesSummary = computed(() => {
                   <UIcon name="i-lucide-wallet" class="h-5 w-5 text-slate-300" />
                 </div>
                 <p class="text-sm font-medium text-slate-200">
-                  {{ t('salary_section.empty_title') }}
+                  {{ t('income_section.empty_title') }}
                 </p>
                 <p class="text-xs text-slate-400">
-                  {{ t('salary_section.empty_subtitle') }}
+                  {{ t('income_section.empty_subtitle') }}
                 </p>
               </div>
 
@@ -789,7 +762,7 @@ const incomeSourcesSummary = computed(() => {
 
                       <div class="mt-1 flex flex-wrap items-center gap-2 text-xs">
                         <UBadge class="border border-slate-500/60 bg-slate-800/80 text-slate-100">
-                          {{ salaryTypes.find(type => type.id === item.type)?.label || item.type }}
+                          {{ incomeTypes.find(type => type.id === item.type)?.label || item.type }}
                         </UBadge>
 
                         <span class="text-slate-400">
@@ -806,17 +779,17 @@ const incomeSourcesSummary = computed(() => {
 
                   <div class="flex items-center gap-2">
                     <UButton v-if="!isEditing" :loading="isLoading" color="info" variant="ghost" icon="i-lucide-pencil" size="xs" @click="initEdit(item)" />
-                    <UButton v-else-if="isEditing && stateEditSalaryId === item.id" :loading="isLoading" color="error" variant="ghost" icon="i-lucide-x" size="xs" @click="cancelEdit" />
+                    <UButton v-else-if="isEditing && stateEditIncomeId === item.id" :loading="isLoading" color="error" variant="ghost" icon="i-lucide-x" size="xs" @click="cancelEdit" />
                     <UPopover v-if="!isEditing" arrow>
                       <UButton :loading="isLoading" color="error" variant="ghost" icon="i-lucide-trash" size="xs" />
 
                       <template #content="{close}">
                         <div class="max-w-xs space-y-3 p-3">
                           <p class="text-sm text-slate-200">
-                            {{ t('salary_section.delete_confirmation') }}
+                            {{ t('income_section.delete_confirmation') }}
                           </p>
                           <div class="flex items-center justify-end gap-2">
-                            <UButton :loading="isLoading" variant="solid" color="error" size="sm" :label="t('confirm')" @click="deleteSalary(item.id), close()" />
+                            <UButton :loading="isLoading" variant="solid" color="error" size="sm" :label="t('confirm')" @click="deleteIncome(item.id), close()" />
                           </div>
                         </div>
                       </template>

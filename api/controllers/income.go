@@ -8,28 +8,28 @@ import (
 	"github.com/rafinhacuri/Deku/sqlite"
 )
 
-type Salary struct {
+type Income struct {
 	Vl    float64 `json:"vl" binding:"required"`
 	Type  string  `json:"type" binding:"required"`
 	Day   *int    `json:"day"`
 	Month string  `json:"month" binding:"required"`
 }
 
-func InsertSalary(c *gin.Context) {
-	var salary Salary
-	if err := c.ShouldBindJSON(&salary); err != nil {
+func InsertIncome(c *gin.Context) {
+	var income Income
+	if err := c.ShouldBindJSON(&income); err != nil {
 		c.JSON(400, gin.H{"message": err.Error()})
 		return
 	}
 
 	userID := c.GetString("username")
 
-	_, err := sqlite.SQL.Exec("INSERT INTO salary (user, value, type, day, month, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+	_, err := sqlite.SQL.Exec("INSERT INTO income (user, value, type, day, month, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		userID,
-		salary.Vl,
-		salary.Type,
-		salary.Day,
-		salary.Month,
+		income.Vl,
+		income.Type,
+		income.Day,
+		income.Month,
 		time.Now().Format(time.RFC3339),
 		time.Now().Format(time.RFC3339),
 	)
@@ -39,10 +39,10 @@ func InsertSalary(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, gin.H{"message": "Salary inserted successfully"})
+	c.JSON(201, gin.H{"message": "Income inserted successfully"})
 }
 
-type SalaryResponse struct {
+type IncomeResponse struct {
 	ID    int     `json:"id"`
 	Vl    float64 `json:"vl" binding:"required"`
 	Type  string  `json:"type" binding:"required"`
@@ -50,50 +50,50 @@ type SalaryResponse struct {
 	Month string  `json:"month" binding:"required"`
 }
 
-func GetSalaries(c *gin.Context) {
+func GetIncomes(c *gin.Context) {
 	userID := c.GetString("username")
 	month := c.Query("month")
 
-	rows, err := sqlite.SQL.Query("SELECT id, value, type, day, month FROM salary WHERE user = ? AND month = ?", userID, month)
+	rows, err := sqlite.SQL.Query("SELECT id, value, type, day, month FROM income WHERE user = ? AND month = ?", userID, month)
 	if err != nil {
 		c.JSON(500, gin.H{"message": err.Error()})
 		return
 	}
 	defer rows.Close()
 
-	salaries := []SalaryResponse{}
+	incomes := []IncomeResponse{}
 	for rows.Next() {
-		var salary SalaryResponse
-		if err := rows.Scan(&salary.ID, &salary.Vl, &salary.Type, &salary.Day, &salary.Month); err != nil {
+		var income IncomeResponse
+		if err := rows.Scan(&income.ID, &income.Vl, &income.Type, &income.Day, &income.Month); err != nil {
 			c.JSON(500, gin.H{"message": err.Error()})
 			return
 		}
-		salaries = append(salaries, salary)
+		incomes = append(incomes, income)
 	}
 
-	sort.SliceStable(salaries, func(i, j int) bool {
+	sort.SliceStable(incomes, func(i, j int) bool {
 		dayI := 0
 		dayJ := 0
-		if salaries[i].Day != nil {
-			dayI = *salaries[i].Day
+		if incomes[i].Day != nil {
+			dayI = *incomes[i].Day
 		}
-		if salaries[j].Day != nil {
-			dayJ = *salaries[j].Day
+		if incomes[j].Day != nil {
+			dayJ = *incomes[j].Day
 		}
 		return dayI < dayJ
 	})
 
-	for i, j := 0, len(salaries)-1; i < j; i, j = i+1, j-1 {
-		salaries[i], salaries[j] = salaries[j], salaries[i]
+	for i, j := 0, len(incomes)-1; i < j; i, j = i+1, j-1 {
+		incomes[i], incomes[j] = incomes[j], incomes[i]
 	}
 
-	c.JSON(200, salaries)
+	c.JSON(200, incomes)
 }
 
-func DeleteSalary(c *gin.Context) {
+func DeleteIncome(c *gin.Context) {
 	id := c.Query("id")
 
-	res, err := sqlite.SQL.Exec("DELETE FROM salary WHERE id = ?", id)
+	res, err := sqlite.SQL.Exec("DELETE FROM income WHERE id = ?", id)
 	if err != nil {
 		c.JSON(500, gin.H{"message": err.Error()})
 		return
@@ -113,18 +113,18 @@ func DeleteSalary(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "Income deleted successfully"})
 }
 
-func UpdateSalary(c *gin.Context) {
+func UpdateIncome(c *gin.Context) {
 	id := c.Query("id")
-	var salary Salary
-	if err := c.ShouldBindJSON(&salary); err != nil {
+	var income Income
+	if err := c.ShouldBindJSON(&income); err != nil {
 		c.JSON(400, gin.H{"message": err.Error()})
 		return
 	}
 
-	row, err := sqlite.SQL.Exec("UPDATE salary SET value = ?, type = ?, day = ?, updated_at = ? WHERE id = ?",
-		salary.Vl,
-		salary.Type,
-		salary.Day,
+	row, err := sqlite.SQL.Exec("UPDATE income SET value = ?, type = ?, day = ?, updated_at = ? WHERE id = ?",
+		income.Vl,
+		income.Type,
+		income.Day,
 		time.Now().Format(time.RFC3339),
 		id,
 	)
@@ -141,9 +141,9 @@ func UpdateSalary(c *gin.Context) {
 	}
 
 	if rowsAffected == 0 {
-		c.JSON(404, gin.H{"message": "Salary not found"})
+		c.JSON(404, gin.H{"message": "Income not found"})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Salary updated successfully"})
+	c.JSON(200, gin.H{"message": "Income updated successfully"})
 }

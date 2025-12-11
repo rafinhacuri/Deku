@@ -21,10 +21,10 @@ func RegisterRoutes(server *gin.Engine) {
 	api := server.Group("/api", middleware.Authenticate)
 	api.GET("/check-session", middleware.CheckSession)
 
-	api.PUT("/salary", controllers.InsertSalary)
-	api.GET("/salary", controllers.GetSalaries)
-	api.DELETE("/salary", controllers.DeleteSalary)
-	api.POST("/salary", controllers.UpdateSalary)
+	api.PUT("/income", controllers.InsertIncome)
+	api.GET("/income", controllers.GetIncomes)
+	api.DELETE("/income", controllers.DeleteIncome)
+	api.POST("/income", controllers.UpdateIncome)
 
 	api.PUT("/expense", controllers.InsertExpense)
 	api.GET("/expense", controllers.GetExpenses)
