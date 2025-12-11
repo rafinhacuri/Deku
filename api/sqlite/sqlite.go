@@ -11,7 +11,7 @@ var SQL *sql.DB
 
 func InitSqlite() (*sql.DB, error) {
 	var err error
-	SQL, err = sql.Open("sqlite3", "/Users/rafaelcuri/bancos-sqlites/deku/db.sqlite")
+	SQL, err = sql.Open("sqlite3", "/database/db.sqlite")
 	if err != nil {
 		return nil, err
 	}
